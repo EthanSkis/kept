@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
 <style>
   :root {
     --ground: #F4F3F1;
@@ -410,6 +410,42 @@
   .lquarter i { position: absolute; left: 0; top: -1px; height: 3px; background: var(--ink); transform-origin: left; }
   .enter .lquarter i { animation: grow-x 1100ms var(--ease) both; animation-delay: 300ms; }
 
+  /* Membership */
+  .mno { font-size: 96px; font-weight: 200; letter-spacing: -0.05em; line-height: .9; font-variant-numeric: tabular-nums; }
+  .mno-in { font-size: 64px; animation: blur-in 1400ms var(--ease) both; animation-delay: 1500ms; }
+  .mperks { margin-top: 32px; border-top: 1px solid #262624; flex-shrink: 0; }
+  .mperk { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 18px; align-items: center; padding: 18px 0; border-bottom: 1px solid #262624; }
+  .mperk b { display: block; font-size: 17px; font-weight: 300; letter-spacing: -0.01em; }
+  .mperk em { display: block; margin-top: 4px; font-style: normal; font-size: 13px; line-height: 1.45; color: var(--night-muted); }
+  .mvis { height: 70px; display: flex; align-items: center; justify-content: center; }
+  .mvis-circle { display: flex; flex-direction: column; gap: 6px; }
+  .mvis-circle span { display: flex; gap: 4px; }
+  .mvis-circle i { width: 6px; height: 14px; border: 1px solid #F4F3F1; }
+  .mvis-circle i.on { background: #F4F3F1; }
+  .cover.inv { background: #F4F3F1; color: var(--night); padding: 6px 5px; box-shadow: 0 10px 24px rgba(0,0,0,.5); }
+  .cover.inv span { font-size: 4px; }
+  .mvol { position: relative; width: 50px; height: 64px; border: 1px solid #F4F3F1; border-left-width: 6px; border-radius: 1px 3px 3px 1px; padding: 6px 6px; display: flex; flex-direction: column; justify-content: space-between; }
+  .mvol span { font-size: 5px; font-weight: 500; letter-spacing: .3em; }
+  .mvol b { font-size: 11px; font-weight: 200; letter-spacing: -0.02em; }
+  .mletter { margin-top: 32px; font-size: 15px; line-height: 1.6; color: #C9C8C4; }
+  .mletter p { margin: 0 0 12px; }
+  .msig { margin-top: 4px; font-family: 'Mrs Saint Delafield', cursive; font-size: 48px; line-height: 1.1; color: #F4F3F1; }
+  .mplans { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+  .mplan { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; border: 1px solid #3A3A38; border-radius: 18px; background: none; color: var(--night-muted); text-align: left; transition: border-color 350ms var(--ease), background 350ms var(--ease), color 350ms, transform 160ms var(--ease); }
+  .mplan:active { transform: scale(.98); }
+  .mplan.on { border-color: #F4F3F1; background: #161615; color: #F4F3F1; }
+  .mplan b { display: block; font-size: 15px; font-weight: 400; }
+  .mplan em { display: block; margin-top: 3px; font-style: normal; font-size: 12px; color: var(--night-muted); }
+  .mprice { font-size: 32px; font-weight: 200; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .btn.ob-btn:disabled { opacity: .6; }
+  .mfine { margin-top: 16px; font-size: 11px; line-height: 1.55; color: #6E6E6B; text-align: center; }
+  .mlinks { display: flex; justify-content: center; gap: 18px; margin-top: 8px; }
+  .mlinks button { background: none; border: none; padding: 6px 0; font-size: 11px; color: var(--night-muted); text-decoration: underline; text-underline-offset: 3px; }
+  .mcard { width: 100%; max-width: 320px; aspect-ratio: 1.586; margin-top: 22px; background: var(--night); color: #F4F3F1; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 2px rgba(0,0,0,.2), 0 18px 40px rgba(0,0,0,.18); }
+  .screen.ob .mcard { border: 1px solid #2E2E2C; margin-top: 0; }
+  .mcard-k { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--night-muted); }
+  .mcard-no { font-size: 40px; font-weight: 200; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+
   html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
 </style>
 </head>
@@ -458,7 +494,8 @@
     ui: {},
     profile: { name: '', done: false, step: 0, plan: null },
     circle: { since: null, notes: {} },
-    library: { joined: null, picks: [], steer: '' }
+    library: { joined: null, picks: [], steer: '' },
+    member: { no: null, plan: null, since: null, invited: null }
   });
 
   function migrateBody(days) {
@@ -483,6 +520,7 @@
           ui: { ...d.ui, ...s.ui },
           circle: { ...d.circle, ...s.circle },
           library: { ...d.library, ...s.library },
+          member: { ...d.member, ...s.member },
           // Anyone who already has history skips the intro.
           profile: { ...d.profile, done: !s.profile && Object.keys(s.days || {}).length > 0, ...s.profile }
         };
@@ -928,7 +966,7 @@
           '<div class="muted">' + (book.author ? esc(book.author) : (book.title ? '' : 'Pick what you are reading')) + '</div>' +
           '<button class="link" data-act="book" style="margin-top:6px;align-self:flex-start">' + (book.title ? 'Change book' : 'Add book') + '</button>' +
           (function () {
-            if (!S.library.joined) return '';
+            if (!isMember() || !S.library.joined) return '';
             const L = libraryState();
             if (L.book.t === book.title) return '';
             return '<a class="small" href="#/library" style="margin-top:4px;color:var(--muted);text-decoration:none">' + (L.stage === LIB_STAGES.length - 1 ? 'Your ' + season(new Date(L.shipped)) + ' pick is here ›' : 'Library · ' + libraryHeadline(L).toLowerCase() + ' ›') + '</a>';
@@ -1121,8 +1159,8 @@
           '<div style="margin-top:8px">' +
             '<button class="mrow static" data-act="open-week" data-v="0"><span>This week</span><span class="mdays">' + wk.kept + ' of ' + wk.elapsed + ' kept ›</span></button>' +
             '<a class="mrow static tight" href="#/entries"><span>Journal</span><span class="mdays">' + nEntries + (nEntries === 1 ? ' entry' : ' entries') + ' ›</span></a>' +
-            '<a class="mrow static tight" href="#/circle"><span>Circle</span><span class="mdays">' + (function () { circleSetup(); const r = circleRows(); return r.reduce((a, x) => a + x.kept.filter(Boolean).length, 0) + ' of ' + r.length * 4 + ' kept today'; })() + ' ›</span></a>' +
-            '<a class="mrow static tight" href="#/library"><span>Library</span><span class="mdays">' + (function () { librarySetup(); return libraryHeadline(libraryState()); })() + ' ›</span></a>' +
+            '<a class="mrow static tight" href="#/circle"><span>Circle</span><span class="mdays">' + (function () { if (!isMember()) return 'Members'; circleSetup(); const r = circleRows(); return r.reduce((a, x) => a + x.kept.filter(Boolean).length, 0) + ' of ' + r.length * 4 + ' kept today'; })() + ' ›</span></a>' +
+            '<a class="mrow static tight" href="#/library"><span>Library</span><span class="mdays">' + (function () { if (!isMember()) return 'Members'; librarySetup(); return libraryHeadline(libraryState()); })() + ' ›</span></a>' +
           '</div>' +
         '</div>' +
         '<div>' +
@@ -1434,6 +1472,135 @@
       '<textarea id="lsteer" maxlength="400" placeholder="Something shorter. Fiction. About work." style="margin-top:20px">' + esc(S.library.steer || '') + '</textarea>' +
       '<button class="btn" data-act="library-steer-save" style="margin-top:16px">Save</button>'
     );
+  }
+
+  /* ---------- Membership ----------
+     The tracker is free for good; membership adds Circle, Library and the annual volume.
+     Preview: no payment is taken. In the native app the button hands off to the App Store
+     purchase sheet, and the fine print below is what App Review requires on the page. */
+  const PLANS = {
+    annual: { label: 'Yearly', price: 450, per: 'year', note: '$37.50 a month, billed yearly' },
+    monthly: { label: 'Monthly', price: 45, per: 'month', note: 'Billed monthly' }
+  };
+  const INVITE_AFTER = 7;
+  const FOUNDER = 'Ethan';
+  const isMember = () => !!S.member.no;
+  const MEMBER_ROUTES = ['circle', 'library'];
+  const NIGHT_ROUTES = ['welcome', 'invite', 'member', 'joined'];
+  // The invitation is earned: it appears once, the first time Today opens on a seven-day streak.
+  function maybeInvite() {
+    if (!S.profile.done || isMember() || S.member.invited) return false;
+    const r = location.hash.replace(/^#\/?/, '') || 'today';
+    if (r !== 'today' || streak() < INVITE_AFTER) return false;
+    S.member.invited = todayKey(); save();
+    location.hash = '#/invite';
+    return true;
+  }
+
+  screens.invite = () => {
+    const n = streak();
+    return '<section class="screen ob">' +
+      '<div class="ob-hero">' +
+        '<div class="ob-mark">KEPT</div>' +
+        '<div class="stack" style="align-items:center;gap:6px">' +
+          '<div class="mno" data-count="' + n + '">' + n + '</div>' +
+          '<div class="ob-kicker">Days kept</div>' +
+        '</div>' +
+        '<div>' +
+          '<h1 class="ob-title center">' + (S.profile.name ? esc(S.profile.name) + ', you’re' : 'You’re') + '<br>invited.</h1>' +
+          '<div class="ob-sub" style="margin:16px auto 0;text-align:center">' + n + ' days in a row. That was the hard part. Membership is for people who keep the standard, and you have.</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="stack" style="gap:14px;width:100%">' +
+        '<button class="btn ob-btn" data-act="nav" data-v="#/member">See membership</button>' +
+        '<button class="link" data-act="nav" data-v="#/today" style="align-self:center;color:var(--night-muted)">Not now</button>' +
+      '</div>' +
+    '</section>';
+  };
+
+  const perkCircle = '<div class="mvis-circle" aria-hidden="true">' + [[1, 1, 1, 1], [1, 1, 0, 1], [1, 1, 1, 0]].map((r) =>
+    '<span>' + r.map((x) => '<i class="' + (x ? 'on' : '') + '"></i>').join('') + '</span>').join('') + '</div>';
+  const perkBook = '<div class="cover inv" aria-hidden="true" style="width:44px;height:66px"><span>KEPT</span><b style="font-size:6px">Letters from a Stoic</b></div>';
+  const perkVolume = '<div class="mvol" aria-hidden="true"><span>KEPT</span><b>' + new Date().getFullYear() + '</b></div>';
+  const perk = (vis, title, sub) => '<div class="mperk"><div class="mvis">' + vis + '</div><div><b>' + title + '</b><em>' + sub + '</em></div></div>';
+
+  screens.member = () => {
+    const plan = S.ui.plan || 'annual';
+    const P = PLANS[plan];
+    if (isMember()) {
+      return '<section class="screen ob">' +
+        '<div class="row"><div class="wordmark">KEPT</div><button class="ob-back" data-act="member-close" aria-label="Close" style="margin:0 -14px 0 0">' + I.close + '</button></div>' +
+        '<div class="ob-hero">' + memberCard() + '<div class="ob-sub" style="text-align:center">You are a member. Circle and Library are open to you.</div></div>' +
+        '<button class="btn ob-btn" data-act="nav" data-v="#/circle">Go to your circle</button>' +
+      '</section>';
+    }
+    return '<section class="screen ob">' +
+      '<div class="row"><div class="wordmark">KEPT</div><button class="ob-back" data-act="member-close" aria-label="Close" style="margin:0 -14px 0 0">' + I.close + '</button></div>' +
+      '<div style="margin-top:36px">' +
+        '<div class="ob-kicker">Membership</div>' +
+        '<h1 class="ob-title">For people<br>who keep it.</h1>' +
+        '<div class="ob-sub">The tracker is yours, free, for good. Membership is everything around it.</div>' +
+      '</div>' +
+      '<div class="mperks">' +
+        perk(perkCircle, 'A seat at a table of seven.', 'Six people who see whether you kept it. No feed, no likes.') +
+        perk(perkBook, 'Four hardcovers a year.', 'Chosen for you, each with a handwritten card.') +
+        perk(perkVolume, 'Your year, bound.', 'Every kept day and every answer, printed each December.') +
+      '</div>' +
+      '<div class="mletter">' +
+        '<p>I built Kept for myself. Tracking was the easy part. What kept me going was a few people who would notice if I slipped, and a good book waiting on the nightstand.</p>' +
+        '<p>Membership is that, for you. Small on purpose.</p>' +
+        '<div class="msig">' + esc(FOUNDER) + '</div>' +
+        '<div class="ob-note" style="text-align:left">Founder</div>' +
+      '</div>' +
+      '<div class="mplans" role="radiogroup" aria-label="Billing">' + Object.keys(PLANS).map((k) =>
+        '<button class="mplan' + (k === plan ? ' on' : '') + '" role="radio" aria-checked="' + (k === plan) + '" data-act="member-plan" data-v="' + k + '">' +
+          '<span><b>' + PLANS[k].label + '</b><em>' + PLANS[k].note + '</em></span>' +
+          '<span class="mprice">$' + PLANS[k].price + '</span>' +
+        '</button>').join('') +
+      '</div>' +
+      '<button class="btn ob-btn" id="member-cta" data-act="member-join" style="margin-top:20px;flex-shrink:0">Become a member</button>' +
+      '<div class="mfine">$' + P.price + ' billed once a ' + P.per + '. Renews automatically until you cancel, which you can do anytime in Settings, at least 24 hours before renewal.</div>' +
+      '<div class="mlinks"><button data-act="member-restore">Restore purchases</button><button data-act="member-legal">Terms</button><button data-act="member-legal">Privacy</button></div>' +
+      '<div class="ob-note" style="margin-top:18px">Preview · no charge is made</div>' +
+    '</section>';
+  };
+
+  function memberCard() {
+    const m = S.member;
+    return '<div class="mcard">' +
+      '<div class="row"><span class="wordmark" style="font-size:11px">KEPT</span><span class="mcard-k">Member</span></div>' +
+      '<div class="mcard-no">No. ' + m.no + '</div>' +
+      '<div class="row mcard-k"><span>' + (S.profile.name ? esc(S.profile.name) : 'Member') + '</span><span>Since ' + new Date(m.since).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) + '</span></div>' +
+    '</div>';
+  }
+
+  screens.joined = () => {
+    if (!isMember()) return screens.member();
+    const pillars = '<div class="ob-pillars" aria-hidden="true">' + [0, 1, 2, 3].map((i) => '<span style="--d:' + i + '"><i></i></span>').join('') + '</div>';
+    return '<section class="screen ob">' +
+      '<div class="ob-hero">' +
+        pillars +
+        '<div class="stack" style="align-items:center;gap:10px">' +
+          '<div class="ob-kicker">Member</div>' +
+          '<div class="mno mno-in">No. ' + S.member.no + '</div>' +
+        '</div>' +
+        '<div class="ob-tag">Welcome' + (S.profile.name ? ', ' + esc(S.profile.name) : '') + '.<br>Your first book ships within the week.<br>Your circle seats you soon after.</div>' +
+      '</div>' +
+      '<div class="stack" style="gap:14px;width:100%">' +
+        '<button class="btn ob-btn" data-act="nav" data-v="#/circle">Meet your circle</button>' +
+        '<button class="link" data-act="nav" data-v="#/today" style="align-self:center;color:var(--night-muted)">Later</button>' +
+      '</div>' +
+    '</section>';
+  };
+
+  function memberJoin(btn) {
+    if (btn.disabled) return;
+    btn.disabled = true; btn.textContent = 'Confirming…';
+    setTimeout(() => {
+      const plan = S.ui.plan || 'annual';
+      S.member = { ...S.member, no: String(17 + Math.floor(H01('m' + Date.now()) * 80)).padStart(4, '0'), plan, since: Date.now() };
+      save(); location.hash = '#/joined';
+    }, 900);
   }
 
   /* ---------- Day view (edit any past day) ---------- */
@@ -2017,6 +2184,9 @@
     const g = S.settings;
     openSheet(
       '<h3>Settings</h3>' +
+      (isMember()
+        ? memberCard() + '<button class="link" data-act="member-manage" style="margin-top:10px;color:var(--muted)">Manage membership</button>'
+        : '<button class="btn ghost" data-act="nav" data-v="#/member" style="margin-top:20px">Membership</button>') +
       '<label class="field-label" for="g-name" style="margin-top:24px">Name</label>' +
       '<input id="g-name" class="field sm" maxlength="24" autocomplete="given-name" value="' + esc(S.profile.name || '') + '" placeholder="First name">' +
       '<div class="grid2" style="margin-top:22px;row-gap:22px">' +
@@ -2372,6 +2542,8 @@
     // Third seasonal shipment, mailed two mornings ago, so the sample shows a package in transit.
     const shipped = new Date(now); shipped.setHours(8, 0, 0, 0);
     S.library = { joined: shipped.getTime() - 2 * 86400000 - 2 * LIB_CYCLE, picks: [], steer: '' };
+    // A 23-day sample streak earns the membership invitation; let it show again.
+    if (!S.member.no) S.member.invited = null;
     save();
   }
   function exportData() {
@@ -2583,6 +2755,15 @@
       case 'sleep-clear': day().sleep = null; save(); closeOverlay(); render(); break;
       case 'settings': openSettings(); break;
       case 'member': openMember(el.dataset.v); break;
+      case 'nav': closeOverlay(true); location.hash = el.dataset.v; break;
+      case 'member-close': if (history.length > 1) history.back(); else location.hash = '#/today'; break;
+      case 'member-plan': S.ui.plan = el.dataset.v; save(); render(); break;
+      case 'member-join': memberJoin(el); break;
+      case 'member-restore': toast('No purchases to restore in the preview'); break;
+      case 'member-legal': toast('Terms and Privacy arrive with launch'); break;
+      case 'member-manage':
+        if (!confirm('End your preview membership? In the app this opens your App Store subscriptions.')) return;
+        S.member = { ...S.member, no: null, plan: null, since: null }; save(); closeOverlay(); render(); toast('Membership ended'); break;
       case 'circle-note': openCircleNote(); break;
       case 'circle-note-save': {
         const t = document.getElementById('cnote').value.trim();
@@ -2683,6 +2864,7 @@
   const route = () => {
     if (!S.profile.done) return 'welcome';
     const r = location.hash.replace(/^#\/?/, '') || 'today';
+    if (MEMBER_ROUTES.includes(r) && !isMember()) return 'member';
     return screens[r] ? r : 'today';
   };
   let lastDay = todayKey();
@@ -2735,7 +2917,7 @@
     for (let i = tc.length; i < fc.length; i++) fc[i].remove();
   }
 
-  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2, circle: 2, library: 2 };
+  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2, circle: 2, library: 2, invite: 1, member: 2, joined: 3 };
   function render(force) {
     const r = route();
     const tpl = document.createElement('template');
@@ -2752,7 +2934,7 @@
       const from = old ? old.dataset.route.split(':')[0] : null;
       // Stepping through the same screen (intro steps, days, weeks) slides by direction.
       const dir = old && from === r && old.dataset.step != null && next.dataset.step != null ? (+next.dataset.step > +old.dataset.step ? 'fwd' : 'back')
-        : !old || r === 'journal' || from === 'journal' ? 'fade' : from === r ? 'fade' : DEPTH[r] > DEPTH[from] ? 'fwd' : DEPTH[r] < DEPTH[from] ? 'back' : 'fade';
+        : !old || r === 'journal' || from === 'journal' || NIGHT_ROUTES.includes(r) || NIGHT_ROUTES.includes(from) ? 'fade' : from === r ? 'fade' : DEPTH[r] > DEPTH[from] ? 'fwd' : DEPTH[r] < DEPTH[from] ? 'back' : 'fade';
       if (old) {
         old.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
         old.classList.remove('enter', 'enter-fwd', 'enter-back', 'enter-fade');
@@ -2766,10 +2948,10 @@
     }
     document.title = r === 'today' ? 'Kept' : 'Kept · ' + r[0].toUpperCase() + r.slice(1);
     const night = r === 'mind' && S.timers.mind;
-    document.querySelector('meta[name="theme-color"]').content = night || r === 'welcome' ? '#0B0B0B' : r === 'journal' ? '#FFFFFF' : '#F4F3F1';
+    document.querySelector('meta[name="theme-color"]').content = night || NIGHT_ROUTES.includes(r) ? '#0B0B0B' : r === 'journal' ? '#FFFFFF' : '#F4F3F1';
     const jt = document.getElementById('j-text'); if (jt) growText(jt);
   }
-  window.addEventListener('hashchange', () => { if (route() !== 'journal') stopListening(); closeOverlay(); render(); });
+  window.addEventListener('hashchange', () => { if (maybeInvite()) return; if (route() !== 'journal') stopListening(); closeOverlay(); render(); });
 
   function tick() {
     if (todayKey() !== lastDay) { lastDay = todayKey(); render(); return; }
@@ -2807,6 +2989,7 @@
   }
   applyMotion();
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', applyMotion);
+  maybeInvite();
   render();
 })();
 </script>
