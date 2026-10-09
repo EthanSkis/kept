@@ -365,6 +365,48 @@
   @keyframes ring { from { transform: scale(1); opacity: .45; } to { transform: scale(1.9); opacity: 0; } }
   @keyframes pulse { 50% { opacity: .45; } }
 
+  /* Circle */
+  .crows { margin-top: 28px; border-top: 1px solid var(--ink); }
+  .crow { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto 64px; align-items: center; gap: 16px; height: 52px; padding: 0; border: none; border-bottom: 1px solid var(--faint); background: none; text-align: left; font-size: 15px; font-weight: 300; color: var(--ink); transition: opacity 160ms; }
+  .crow:active { opacity: .6; }
+  .enter .crow { animation: fade-in 500ms var(--ease) both; animation-delay: calc(220ms + var(--d) * 50ms); }
+  .crow.you { font-weight: 400; }
+  .crow.quiet .cname { color: var(--muted); }
+  .cname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cname em { margin-left: 8px; font-style: normal; font-size: 11px; font-weight: 300; color: var(--muted); }
+  .cstreak { text-align: right; font-size: 22px; font-weight: 200; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .cstreak em { font-style: normal; font-size: 12px; font-weight: 300; letter-spacing: 0; color: var(--muted); }
+  .mshafts { display: flex; gap: 5px; }
+  .mshafts i { position: relative; display: block; width: 7px; height: 22px; border: 1px solid var(--ink); overflow: hidden; }
+  .mshafts i::after { content: ''; position: absolute; inset: 0; background: var(--ink); transform: scaleY(0); transform-origin: bottom; transition: transform 600ms var(--ease); }
+  .mshafts i.on::after { transform: scaleY(1); }
+  .enter .mshafts i.on::after { animation: grow-y 700ms var(--ease) both; animation-delay: 420ms; }
+  .crow.quiet .mshafts i { border-color: var(--line); }
+  .cnote { padding: 14px 0; border-bottom: 1px solid var(--faint); font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+  .cnote .small { margin-bottom: 4px; }
+  /* Library */
+  .ltitle { margin-top: 6px; font-size: 40px; font-weight: 200; letter-spacing: -.03em; line-height: 1.05; }
+  .cover { flex-shrink: 0; background: var(--ink); color: var(--paper); padding: 10px 9px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 10px 24px rgba(0,0,0,.12); }
+  .cover span { font-size: 6px; font-weight: 500; letter-spacing: .32em; }
+  .cover b { margin-top: auto; font-size: 10px; font-weight: 300; line-height: 1.2; overflow-wrap: anywhere; }
+  .cover i { margin-top: 4px; font-style: normal; font-size: 7px; color: var(--night-muted); }
+  .enter .cover { animation: card-in 700ms cubic-bezier(.2,.95,.25,1) both; animation-delay: 160ms; }
+  .ltrack { position: relative; flex-shrink: 0; margin: 36px 0 0; height: 44px; }
+  .lline { position: absolute; left: 0; right: 0; top: 4px; height: 1px; background: var(--line); }
+  .lline i { position: absolute; left: 0; top: -1px; height: 3px; width: var(--fill); background: var(--ink); transform-origin: left; transition: width 700ms var(--ease); }
+  .enter .lline i { animation: grow-x 1100ms var(--ease) both; animation-delay: 300ms; }
+  .lstop { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .lstop i { width: 9px; height: 9px; border-radius: 50%; background: var(--ground); border: 1px solid var(--line); transition: background 400ms, border-color 400ms; }
+  .lstop.on i { background: var(--ink); border-color: var(--ink); }
+  .lstop span { font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .lstop.on span { color: var(--ink); }
+  .lstop.first { align-items: flex-start; transform: translateX(-4px); }
+  .lstop.last { align-items: flex-end; transform: translateX(calc(-100% + 4px)); }
+  .levents { margin-top: 12px; }
+  .levent { padding: 10px 0 10px 16px; border-left: 1px solid var(--faint); font-size: 14px; color: var(--muted); }
+  .levent.cur { border-left-color: var(--ink); color: var(--ink); }
+  .levent .small { margin-top: 2px; }
+
   html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
 </style>
 </head>
@@ -411,7 +453,9 @@
     days: {},
     timers: { mind: null, work: null },
     ui: {},
-    profile: { name: '', done: false, step: 0, plan: null }
+    profile: { name: '', done: false, step: 0, plan: null },
+    circle: { since: null, notes: {} },
+    library: { joined: null, picks: [], steer: '' }
   });
 
   function migrateBody(days) {
@@ -434,6 +478,8 @@
           days: migrateBody(s.days || {}),
           timers: { ...d.timers, ...s.timers },
           ui: { ...d.ui, ...s.ui },
+          circle: { ...d.circle, ...s.circle },
+          library: { ...d.library, ...s.library },
           // Anyone who already has history skips the intro.
           profile: { ...d.profile, done: !s.profile && Object.keys(s.days || {}).length > 0, ...s.profile }
         };
@@ -878,6 +924,12 @@
           '<div style="font-size:20px;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (book.title ? esc(book.title) : 'No book yet') + '</div>' +
           '<div class="muted">' + (book.author ? esc(book.author) : (book.title ? '' : 'Pick what you are reading')) + '</div>' +
           '<button class="link" data-act="book" style="margin-top:6px;align-self:flex-start">' + (book.title ? 'Change book' : 'Add book') + '</button>' +
+          (function () {
+            if (!S.library.joined) return '';
+            const L = libraryState();
+            if (L.book.t === book.title) return '';
+            return '<a class="small" href="#/library" style="margin-top:4px;color:var(--muted);text-decoration:none">' + (L.stage === LIB_STAGES.length - 1 ? 'Your library pick arrived ›' : 'Library · ' + libraryHeadline(L).toLowerCase() + ' ›') + '</a>';
+          })() +
         '</div>' +
       '</div>' +
       '<div style="margin-top:44px">' +
@@ -1066,6 +1118,8 @@
           '<div style="margin-top:8px">' +
             '<button class="mrow static" data-act="open-week" data-v="0"><span>This week</span><span class="mdays">' + wk.kept + ' of ' + wk.elapsed + ' kept ›</span></button>' +
             '<a class="mrow static tight" href="#/entries"><span>Journal</span><span class="mdays">' + nEntries + (nEntries === 1 ? ' entry' : ' entries') + ' ›</span></a>' +
+            '<a class="mrow static tight" href="#/circle"><span>Circle</span><span class="mdays">' + (function () { circleSetup(); const r = circleRows(); return r.reduce((a, x) => a + x.kept.filter(Boolean).length, 0) + ' of ' + r.length * 4 + ' kept today'; })() + ' ›</span></a>' +
+            '<a class="mrow static tight" href="#/library"><span>Library</span><span class="mdays">' + (function () { librarySetup(); return libraryHeadline(libraryState()); })() + ' ›</span></a>' +
           '</div>' +
         '</div>' +
         '<div>' +
@@ -1083,6 +1137,272 @@
       '<div class="push" style="padding-top:40px"><button class="btn ghost" data-act="settings">' + I.gear + 'Settings</button></div>' +
     '</section>';
   };
+
+  /* ---------- Circle ----------
+     Preview: there are no accounts or sync yet, so the other six members are simulated.
+     Their days are derived from a hash of member and date, so they stay consistent across reloads. */
+  const H01 = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
+  const fmtHours = (h) => { const t = Math.round(h * 60); return fmt12(pad(Math.floor(t / 60) % 24) + ':' + pad(t % 60)); };
+  const CIRCLE_SEATS = 7;
+  const QUIET_LIMIT = 14;
+  // `run` is the streak on the day the circle was joined; `at` is the hour each pillar usually gets kept.
+  const CIRCLE = [
+    { id: 'theo', name: 'Theo A.', run: 112, at: { rest: 5.9, body: 6.4, work: 9.2, mind: 21.8 } },
+    { id: 'maren', name: 'Maren K.', run: 47, at: { rest: 6.6, body: 12.2, work: 10.4, mind: 21.1 } },
+    { id: 'ines', name: 'Ines V.', run: 23, at: { rest: 7.1, body: 17.6, work: 13.1, mind: 20.4 } },
+    { id: 'jonah', name: 'Jonah R.', run: 9, at: { rest: 7.8, body: 18.3, work: 15.2, mind: 22.9 } },
+    { id: 'sam', name: 'Sam W.', run: 3, at: { rest: 8.1, body: 7.2, work: 14.4, mind: 22.4 } },
+    { id: 'cal', name: 'Cal B.', run: 31, quiet: 10, at: { rest: 6.9, body: 6.8, work: 11.0, mind: 21.5 } }
+  ];
+  const CIRCLE_NOTES = [
+    'Slept badly Tuesday and kept it anyway. Bed by ten tonight.',
+    'Finished the Seneca. Letter 49 is the one.',
+    'Two blocks before nine every day this week. Mornings are the whole trick.',
+    'Missed Body Thursday, made it up with a long walk. Counting it.',
+    'Phone in the kitchen at night. Reading went from 20 to 45 minutes.',
+    'Hard week at work. The four kept me sane.',
+    'New squat best. Small numbers add up.',
+    'Read on the train instead of scrolling. Felt like cheating.'
+  ];
+  function circleSetup() {
+    if (S.circle.since) return;
+    S.circle.since = todayKey(); save();
+  }
+  const memberGrown = () => Math.max(0, daysBetween(fromKey(S.circle.since || todayKey()), new Date()));
+  // Which pillars a member kept on day k, and roughly when.
+  function memberDay(m, k) {
+    const off = daysBetween(fromKey(k), new Date());
+    const gap = m.quiet || 0;
+    const run = gap ? 40 : m.run + memberGrown();
+    const at = PILLARS.map((p) => m.at[p] + (H01(m.id + k + p) - .5) * .8);
+    if (off < gap) return { kept: [false, false, false, false], at };
+    if (off === 0) {
+      const now = new Date(), h = now.getHours() + now.getMinutes() / 60;
+      return { kept: at.map((t) => t <= h), at };
+    }
+    if (off - gap <= run) return { kept: [true, true, true, true], at };
+    if (off - gap === run + 1) { const miss = Math.floor(H01(m.id + k) * 4); return { kept: PILLARS.map((_, i) => i !== miss), at }; }
+    return { kept: PILLARS.map((p) => H01(m.id + k + p + 'x') < .86), at };
+  }
+  const memberStreak = (m) => (m.quiet ? 0 : m.run + memberGrown() + (memberDay(m, todayKey()).kept.every(Boolean) ? 1 : 0));
+  function circleRows() {
+    const you = { id: 'you', name: S.profile.name || 'You', you: true, kept: keptOf(peek(todayKey())), streak: streak() };
+    const others = CIRCLE.map((m) => ({ ...m, kept: memberDay(m, todayKey()).kept, streak: memberStreak(m) }));
+    return [you].concat(others).sort((a, b) => b.streak - a.streak || (a.you ? -1 : 1));
+  }
+  const weekKey = () => keyOf(weekDates()[0]);
+  function circleNotes() {
+    const wk = Math.round(weekDates()[0].getTime() / 604800000);
+    const active = CIRCLE.filter((m) => !m.quiet);
+    const out = [];
+    for (let i = 0; i < 2; i++) {
+      const m = active[(wk * 3 + i * 2) % active.length];
+      out.push({ name: m.name, text: CIRCLE_NOTES[(wk + i * 3) % CIRCLE_NOTES.length] });
+    }
+    return out;
+  }
+  const miniShafts = (kept) => '<span class="mshafts" aria-hidden="true">' + kept.map((x) => '<i class="' + (x ? 'on' : '') + '"></i>').join('') + '</span>';
+
+  screens.circle = () => {
+    circleSetup();
+    const rows = circleRows();
+    const kept = rows.reduce((a, r) => a + r.kept.filter(Boolean).length, 0);
+    const mine = (S.circle.notes || {})[weekKey()];
+    const notes = (mine ? [{ name: S.profile.name || 'You', text: mine, you: true }] : []).concat(circleNotes());
+    return '<section class="screen">' +
+      header(backTo('#/progress', 'Progress'), '<div class="wordmark">KEPT</div>') +
+      '<div style="margin-top:28px">' +
+        '<div class="muted">Circle · ' + CIRCLE_SEATS + ' seats</div>' +
+        '<div style="margin-top:6px;display:flex;align-items:baseline;gap:10px">' +
+          '<div class="num" data-count="' + kept + '" style="font-size:72px;line-height:.9">' + kept + '</div>' +
+          '<div class="muted">of ' + rows.length * 4 + ' kept so far today</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="crows">' + rows.map((r, i) =>
+        '<button class="crow' + (r.you ? ' you' : '') + (r.quiet ? ' quiet' : '') + '" data-act="' + (r.you ? 'open-day' : 'member') + '" data-v="' + (r.you ? todayKey() : r.id) + '" style="--d:' + i + '" ' +
+          'aria-label="' + esc(r.name) + ', ' + r.kept.filter(Boolean).length + ' of 4 today, ' + (r.quiet ? 'quiet ' + r.quiet + ' days' : r.streak + ' days in a row') + '">' +
+          '<span class="cname">' + esc(r.name) + (r.you ? '<em>you</em>' : '') + '</span>' +
+          miniShafts(r.kept) +
+          '<span class="cstreak">' + (r.quiet ? '<em>quiet ' + r.quiet + 'd</em>' : r.streak) + '</span>' +
+        '</button>').join('') +
+      '</div>' +
+      '<div class="row small" style="margin-top:10px"><span>Today, Body · Mind · Work · Rest</span><span>days in a row</span></div>' +
+      '<div class="wsec" style="margin-top:36px;border-top-color:var(--ink)">' +
+        '<div class="row"><div class="dlabel">This week’s notes</div><button class="link" data-act="circle-note">' + (mine ? 'Edit yours' : 'Write yours') + '</button></div>' +
+        notes.map((n) => '<div class="cnote"><div class="small">' + esc(n.name) + (n.you ? ' · you' : '') + '</div><div>' + esc(n.text) + '</div></div>').join('') +
+      '</div>' +
+      '<div class="push stack" style="gap:6px;padding-top:32px">' +
+        '<div class="muted center">No likes, no feed. Two quiet weeks and your seat goes to the waitlist.</div>' +
+        '<div class="small center">Preview · other members are sample data</div>' +
+      '</div>' +
+    '</section>';
+  };
+
+  function openMember(id) {
+    const m = CIRCLE.find((x) => x.id === id);
+    if (!m) return;
+    const today = memberDay(m, todayKey());
+    const st = memberStreak(m);
+    const now = new Date();
+    let cells = '';
+    const start = addDays(now, -27);
+    for (let i = 0; i < 28; i++) {
+      const k = keyOf(addDays(start, i));
+      const n = memberDay(m, k).kept.filter(Boolean).length;
+      const bg = n === 4 ? 'var(--ink)' : n === 0 ? 'var(--faint)' : 'rgba(17,17,17,' + (0.15 + n * 0.18) + ')';
+      cells += '<div style="background:' + bg + (k === todayKey() ? ';outline:1px solid var(--ink);outline-offset:2px' : '') + '"></div>';
+    }
+    const seat = m.quiet
+      ? 'Quiet ' + m.quiet + ' days. Seat opens to the waitlist in ' + (QUIET_LIMIT - m.quiet) + (QUIET_LIMIT - m.quiet === 1 ? ' day.' : ' days.')
+      : 'Seat secure.';
+    openSheet(
+      '<h3>' + esc(m.name) + '</h3>' +
+      '<div class="muted" style="margin-top:6px">' + (m.quiet ? 'No days logged lately' : st + (st === 1 ? ' day' : ' days') + ' kept in a row') + '</div>' +
+      '<div style="margin-top:20px">' + PILLARS.map((p, i) =>
+        '<div class="drow"><div>' + NAMES[p] + '</div><div class="dstate' + (today.kept[i] ? ' on' : '') + '">' + (today.kept[i] ? 'Kept ' + fmtHours(today.at[i]) : 'Open') + '</div></div>').join('') +
+      '</div>' +
+      '<div class="muted" style="margin-top:24px">Last four weeks</div>' +
+      '<div class="cal">' + cells + '</div>' +
+      '<div class="muted" style="margin-top:20px">' + seat + '</div>'
+    );
+  }
+
+  function openCircleNote() {
+    const mine = (S.circle.notes || {})[weekKey()] || '';
+    openSheet(
+      '<h3>Your note</h3>' +
+      '<div class="muted" style="margin-top:6px">One per week. Your circle sees it until Sunday.</div>' +
+      '<textarea id="cnote" maxlength="280" placeholder="How the week went, honestly" style="margin-top:20px">' + esc(mine) + '</textarea>' +
+      '<button class="btn" data-act="circle-note-save" style="margin-top:16px">Post to circle</button>' +
+      (mine ? '<button class="btn ghost" data-act="circle-note-clear" style="margin-top:10px">Remove note</button>' : '')
+    );
+  }
+
+  /* ---------- Library ----------
+     Preview: one hardcover a month. Shipping events are simulated on a fixed schedule
+     from the shipment date until fulfillment and a carrier integration exist. */
+  const LIB_CYCLE = 30 * 86400000;
+  const LIBRARY = [
+    { t: 'Letters from a Stoic', a: 'Seneca', why: 'You keep writing about time. Seneca spent a whole letter on it. Start with the first one and read one a night.' },
+    { t: 'The Old Man and the Sea', a: 'Ernest Hemingway', why: 'Short and hard, about keeping at it when nobody is watching. Two sittings, maybe three.' },
+    { t: 'What I Talk About When I Talk About Running', a: 'Haruki Murakami', why: 'A novelist on training every day for decades. Your Body column says you will get it.' },
+    { t: 'Man’s Search for Meaning', a: 'Viktor E. Frankl', why: 'Your gratitude answers have been getting longer. This is the book under all of them.' },
+    { t: 'Wind, Sand and Stars', a: 'Antoine de Saint-Exupéry', why: 'About craft, and showing up for the work when it is cold and early. Read it slowly.' },
+    { t: 'Stoner', a: 'John Williams', why: 'A quiet life, kept carefully. People finish it and sit still for a while.' },
+    { t: 'Walden', a: 'Henry David Thoreau', why: 'For the weeks when everything feels loud. Skip the economy chapter if you need to. Come back to it later.' }
+  ];
+  // Hours after the shipment date at which each stage happens.
+  const LIB_STAGES = [
+    { h: 0, label: 'Chosen', ev: 'Chosen for you', where: 'Kept Library' },
+    { h: 5, label: 'Packed', ev: 'Packed with your note', where: 'Kept Library' },
+    { h: 27, label: 'Shipped', ev: 'Picked up by USPS', where: 'Origin facility' },
+    { h: 51, label: 'In transit', ev: 'In transit to your area', where: 'Regional facility' },
+    { h: 75, label: 'Out', ev: 'Out for delivery', where: 'Your local post office' },
+    { h: 80, label: 'Delivered', ev: 'Delivered to your door', where: '' }
+  ];
+  function librarySetup() {
+    if (S.library.joined) return;
+    // Ship the first pick as of 8am today so the schedule lines up with real mail hours.
+    const d = new Date(); d.setHours(8, 0, 0, 0);
+    S.library.joined = d.getTime(); save();
+  }
+  function libraryState() {
+    const now = Date.now();
+    const n = Math.max(0, Math.floor((now - S.library.joined) / LIB_CYCLE));
+    const shipped = S.library.joined + n * LIB_CYCLE;
+    // Each shipment's pick is fixed once chosen, skipping whatever was on the nightstand at the time.
+    const picks = S.library.picks = S.library.picks || [];
+    for (let i = picks.length; i <= n; i++) {
+      const fresh = LIBRARY.filter((b) => !picks.includes(b.t) && b.t !== S.settings.book.title);
+      picks.push((fresh[0] || LIBRARY[i % LIBRARY.length]).t);
+      save();
+    }
+    const pick = (i) => LIBRARY.find((b) => b.t === picks[i]) || LIBRARY[0];
+    const hrs = (now - shipped) / 3600000;
+    let stage = 0;
+    LIB_STAGES.forEach((s, i) => { if (hrs >= s.h) stage = i; });
+    const digits = ('9400' + String(Math.floor(H01('kept' + S.library.joined + n) * 1e9)).padStart(9, '0') + String(Math.floor(H01('ship' + n + S.library.joined) * 1e9)).padStart(9, '0'));
+    return {
+      n, shipped, stage, book: pick(n),
+      at: (i) => new Date(shipped + LIB_STAGES[i].h * 3600000),
+      eta: new Date(shipped + LIB_STAGES[LIB_STAGES.length - 1].h * 3600000),
+      next: new Date(shipped + LIB_CYCLE),
+      shelf: [...Array(n)].map((_, i) => ({ ...pick(i), when: new Date(S.library.joined + i * LIB_CYCLE) })).reverse(),
+      tracking: digits.match(/.{1,4}/g).join(' ')
+    };
+  }
+  const dayName = (dt) => {
+    const diff = daysBetween(new Date(), dt);
+    return diff === 0 ? 'today' : diff === 1 ? 'tomorrow' : diff === -1 ? 'yesterday' : dt.toLocaleDateString('en-US', { weekday: 'long' });
+  };
+  const fmtWhen = (dt) => dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + fmt12(pad(dt.getHours()) + ':' + pad(dt.getMinutes()));
+  function libraryHeadline(L) {
+    const last = LIB_STAGES.length - 1;
+    if (L.stage === last) return 'Delivered ' + dayName(L.at(last));
+    if (L.stage === last - 1) return 'Out for delivery';
+    const d = dayName(L.eta);
+    return 'Arriving ' + d;
+  }
+  const bookCover = (b, w) => '<div class="cover" style="width:' + w + 'px;height:' + Math.round(w * 1.5) + 'px">' +
+    '<span>KEPT</span><b>' + esc(b.t) + '</b><i>' + esc(b.a) + '</i></div>';
+
+  screens.library = () => {
+    librarySetup();
+    const L = libraryState();
+    const last = LIB_STAGES.length - 1;
+    const delivered = L.stage === last;
+    const reading = S.settings.book.title === L.book.t;
+    // Five evenly spaced stops; "In transit" has no stop of its own and fills halfway to "Out".
+    const POS = [0, 25, 50, 62.5, 75, 100];
+    const fill = POS[L.stage];
+    const stops = LIB_STAGES.map((s, i) => (i === 3 ? '' :
+      '<div class="lstop' + (i <= L.stage ? ' on' : '') + (i === 0 ? ' first' : i === last ? ' last' : '') + '" style="left:' + POS[i] + '%"><i></i><span>' + s.label + '</span></div>')).join('');
+    const events = LIB_STAGES.slice(0, L.stage + 1).map((s, i) => ({ s, dt: L.at(i) })).reverse().map((e, i) =>
+      '<div class="levent' + (i === 0 ? ' cur' : '') + '"><div>' + e.s.ev + '</div><div class="small">' + fmtWhen(e.dt) + (e.s.where ? ' · ' + e.s.where : '') + '</div></div>').join('');
+    return '<section class="screen">' +
+      header(backTo('#/progress', 'Progress'), '<div class="wordmark">KEPT</div>') +
+      '<div style="margin-top:28px">' +
+        '<div class="muted">Library · No. ' + (L.n + 1) + '</div>' +
+        '<div class="ltitle">' + libraryHeadline(L) + '</div>' +
+      '</div>' +
+      '<div style="margin-top:28px;display:flex;gap:20px;align-items:flex-end">' +
+        bookCover(L.book, 92) +
+        '<div class="stack" style="gap:4px;min-width:0">' +
+          '<div style="font-size:20px;letter-spacing:-.01em;line-height:1.2">' + esc(L.book.t) + '</div>' +
+          '<div class="muted">' + esc(L.book.a) + '</div>' +
+          '<div class="small" style="margin-top:6px">Hardcover · ' + new Date(L.shipped).toLocaleDateString('en-US', { month: 'long' }) + ' pick</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ltrack" style="--fill:' + fill + '%"><div class="lline"><i></i></div>' + stops + '</div>' +
+      '<div class="levents">' + events + '</div>' +
+      '<div class="small" style="margin-top:10px">USPS Priority Mail · ' + L.tracking + '</div>' +
+      '<div class="wsec" style="margin-top:28px;border-top-color:var(--ink)">' +
+        '<div class="dlabel">Why this one</div>' +
+        '<p class="wquote">' + esc(L.book.why) + '</p>' +
+        '<div class="small" style="margin-top:10px">From the Kept Library, with a handwritten card in the box</div>' +
+      '</div>' +
+      (L.shelf.length
+        ? '<div class="wsec"><div class="dlabel">Your shelf</div>' + L.shelf.map((b) =>
+            '<div class="wrow"><span>' + esc(b.t) + '<span class="small" style="display:block;margin-top:2px">' + esc(b.a) + '</span></span><span class="muted">' + b.when.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) + '</span></div>').join('') + '</div>'
+        : '') +
+      '<div class="push stack" style="gap:12px;padding-top:32px">' +
+        (delivered
+          ? (reading ? '<div class="muted center">Now reading. Mind counts every minute.</div>' : '<button class="btn" data-act="library-read">Start reading</button>')
+          : '') +
+        '<button class="btn ghost" data-act="library-steer">' + (S.library.steer ? 'Edit your steer for next month' : 'Steer next month’s pick') + '</button>' +
+        '<div class="small center">Next pick ships ' + L.next.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · Preview, shipping is simulated</div>' +
+      '</div>' +
+    '</section>';
+  };
+
+  function openSteer() {
+    openSheet(
+      '<h3>Steer the next pick</h3>' +
+      '<div class="muted" style="margin-top:6px">A mood, a subject, something you want more or less of. A person reads this.</div>' +
+      '<textarea id="lsteer" maxlength="400" placeholder="Something shorter. Fiction. About work." style="margin-top:20px">' + esc(S.library.steer || '') + '</textarea>' +
+      '<button class="btn" data-act="library-steer-save" style="margin-top:16px">Save</button>'
+    );
+  }
 
   /* ---------- Day view (edit any past day) ---------- */
   function dayKeyOpen() {
@@ -2016,6 +2336,10 @@
     S.days = days;
     S.settings = { ...S.settings, routines: [{ id: 'upper', name: 'Upper', muscles: DEMO_UPPER.slice() }, { id: 'lower', name: 'Lower', muscles: DEMO_LOWER.slice() }], mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', book: { title: 'Meditations', author: 'Marcus Aurelius' } };
     S.timers = { mind: null, work: null };
+    S.circle = { since: keyOf(addDays(now, -12)), notes: {} };
+    // Third shipment, mailed two mornings ago, so the sample shows a package in transit.
+    const shipped = new Date(now); shipped.setHours(8, 0, 0, 0);
+    S.library = { joined: shipped.getTime() - 2 * 86400000 - 2 * LIB_CYCLE, picks: [], steer: '' };
     save();
   }
   function exportData() {
@@ -2226,6 +2550,21 @@
       }
       case 'sleep-clear': day().sleep = null; save(); closeOverlay(); render(); break;
       case 'settings': openSettings(); break;
+      case 'member': openMember(el.dataset.v); break;
+      case 'circle-note': openCircleNote(); break;
+      case 'circle-note-save': {
+        const t = document.getElementById('cnote').value.trim();
+        if (!t) { toast('Write something first'); return; }
+        S.circle.notes[weekKey()] = t; save(); closeOverlay(); render(); toast('Posted to your circle'); break;
+      }
+      case 'circle-note-clear': delete S.circle.notes[weekKey()]; save(); closeOverlay(); render(); break;
+      case 'library-read': {
+        const b = libraryState().book;
+        S.settings.book = { title: b.t, author: b.a }; save(); location.hash = '#/mind'; toast('Now reading ' + b.t); break;
+      }
+      case 'library-steer': openSteer(); break;
+      case 'library-steer-save':
+        S.library.steer = document.getElementById('lsteer').value.trim(); save(); closeOverlay(); render(); toast(S.library.steer ? 'Your librarian will see this' : 'Saved'); break;
       case 'replay-intro':
         S.profile.done = false; S.profile.step = 0; save(); closeOverlay(true); location.hash = '#/welcome'; render(); break;
       case 'ob-next': {
@@ -2364,7 +2703,7 @@
     for (let i = tc.length; i < fc.length; i++) fc[i].remove();
   }
 
-  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2 };
+  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2, circle: 2, library: 2 };
   function render(force) {
     const r = route();
     const tpl = document.createElement('template');
