@@ -3032,6 +3032,7 @@
   }
 
   const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2, circle: 2, library: 2, invite: 1, member: 2, joined: 3, closed: 0 };
+  let lastBarStyle = null;
   function render(force) {
     const r = route();
     const tpl = document.createElement('template');
@@ -3063,6 +3064,10 @@
     document.title = r === 'today' ? 'Kept' : 'Kept · ' + r[0].toUpperCase() + r.slice(1);
     const night = r === 'mind' && S.timers.mind;
     document.querySelector('meta[name="theme-color"]').content = night || NIGHT_ROUTES.includes(r) ? '#0B0B0B' : r === 'journal' ? '#FFFFFF' : '#F4F3F1';
+    // In the Android app, light icons over the night screens and dark icons everywhere else.
+    const bars = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SystemBars;
+    const barStyle = night || NIGHT_ROUTES.includes(r) ? 'DARK' : 'LIGHT';
+    if (bars && barStyle !== lastBarStyle) { lastBarStyle = barStyle; bars.setStyle({ style: barStyle }).catch(() => { /* cosmetic */ }); }
     const jt = document.getElementById('j-text'); if (jt) growText(jt);
   }
   window.addEventListener('hashchange', () => { if (maybeInvite()) return; if (route() !== 'journal') stopListening(); closeOverlay(); render(); });
@@ -3105,7 +3110,9 @@
     location.replace('https://' + location.host + location.pathname + location.search + location.hash);
   }
   // Installable app: cache the app so it opens offline. Needs http(s), so skip when opened as a file.
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  // Inside the native app Capacitor already serves the files locally, so skip the web cache layer.
+  const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if ('serviceWorker' in navigator && location.protocol !== 'file:' && !isNative) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* offline support is optional */ }));
   }
   applyMotion();
