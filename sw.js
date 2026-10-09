@@ -1,6 +1,6 @@
 // Kept service worker: lets the installed app open instantly and work offline.
 // Bump CACHE when shipping a change you want picked up on the next launch.
-const CACHE = 'kept-v3';
+const CACHE = 'kept-v4';
 const SHELL = [
   './',
   './index.html',

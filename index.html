@@ -231,6 +231,58 @@
   .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 14px; }
   .cal div { height: 18px; border-radius: 2px; }
 
+  /* Onboarding */
+  .screen.ob { background: var(--night); color: #F4F3F1; padding: var(--top) 28px var(--bottom); }
+  .ob-top { display: grid; grid-template-columns: 44px 1fr 56px; align-items: center; gap: 12px; }
+  .ob-back { width: 44px; height: 44px; margin-left: -14px; border: none; background: none; color: var(--night-muted); display: flex; align-items: center; justify-content: center; transition: opacity 200ms; }
+  .ob-back:active { opacity: .5; }
+  .ob-progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .ob-progress span { position: relative; height: 1px; background: #2E2E2C; overflow: hidden; }
+  .ob-progress span::after { content: ''; position: absolute; inset: 0; background: #F4F3F1; transform: scaleX(0); transform-origin: left; }
+  .ob-progress span.on::after { transform: scaleX(1); }
+  .ob-progress span.cur::after { animation: grow-x 1100ms var(--ease) both; animation-delay: 250ms; }
+  .ob-count { font-size: 11px; letter-spacing: .2em; color: var(--night-muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .ob-body { margin-top: 44px; display: flex; flex-direction: column; }
+  .ob-kicker { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--night-muted); }
+  .ob-title { margin: 14px 0 0; font-size: 38px; font-weight: 200; letter-spacing: -0.03em; line-height: 1.08; }
+  .ob-title.center { text-align: center; margin: 0; }
+  .screen.ob .ob-title { animation: blur-in 1100ms var(--ease) both; animation-delay: 160ms; }
+  @keyframes blur-in { from { opacity: 0; filter: blur(12px); transform: translateY(10px); } }
+  .ob-sub { margin-top: 14px; font-size: 14px; line-height: 1.5; color: var(--night-muted); max-width: 300px; }
+  .ob-input { margin-top: 44px; width: 100%; border: none; border-bottom: 1px solid #3A3A38; border-radius: 0; background: transparent; padding: 8px 0 14px; color: #F4F3F1; font-family: inherit; font-size: 30px; font-weight: 200; letter-spacing: -0.02em; outline: none; transition: border-color 500ms var(--ease); }
+  .ob-input:focus { border-color: #F4F3F1; }
+  .ob-input::placeholder { color: #4A4A47; }
+  .btn.ob-btn { margin-top: auto; background: #F4F3F1; color: var(--night); letter-spacing: .02em; }
+  .ob-body + .ob-btn { margin-top: auto; }
+  .screen.ob > .ob-btn { flex-shrink: 0; }
+  .screen.ob > .ob-body { margin-bottom: 32px; }
+  .ob-hero { margin: auto 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 40px; padding: 24px 0; }
+  .ob-mark { font-size: 15px; font-weight: 500; letter-spacing: .42em; padding-left: .42em; animation: mark-in 1800ms var(--ease) both; }
+  @keyframes mark-in { from { opacity: 0; letter-spacing: 1.2em; padding-left: 1.2em; } }
+  .ob-pillars { position: relative; width: 232px; display: flex; justify-content: space-around; padding: 10px 0; }
+  .ob-pillars::before, .ob-pillars::after { content: ''; position: absolute; left: 0; right: 0; height: 1px; background: #F4F3F1; animation: grow-x 1200ms var(--ease) both; animation-delay: 300ms; transform-origin: center; }
+  .ob-pillars::before { top: 0; }
+  .ob-pillars::after { bottom: 0; }
+  .ob-pillars span { position: relative; width: 20px; height: 140px; border: 1px solid #F4F3F1; overflow: hidden; animation: fade-in 700ms var(--ease) both; animation-delay: calc(500ms + var(--d) * 120ms); }
+  .ob-pillars i { position: absolute; inset: 0; background: #F4F3F1; transform-origin: bottom; animation: fill-up 1100ms var(--ease) both; animation-delay: calc(900ms + var(--d) * 180ms); }
+  @keyframes fill-up { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .ob-tag { font-size: 15px; line-height: 1.6; color: var(--night-muted); animation: fade-in 1200ms var(--ease) both; animation-delay: 1500ms; }
+  .ob-note { font-size: 12px; color: #6E6E6B; text-align: center; }
+  .ob-goals { margin-top: 32px; border-top: 1px solid #262624; }
+  .ob-goal { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #262624; }
+  .ob-goal-k { font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: #6E6E6B; margin-bottom: 5px; }
+  .ob-goal-l { font-size: 17px; font-weight: 300; }
+  .ob-stepper { display: flex; align-items: center; gap: 10px; }
+  .ob-stepper span { min-width: 78px; text-align: center; font-size: 16px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .ob-stepper button { width: 36px; height: 36px; border-radius: 18px; border: 1px solid #3A3A38; background: none; color: #F4F3F1; font-size: 18px; font-weight: 200; display: flex; align-items: center; justify-content: center; transition: transform 160ms var(--ease), background 200ms; }
+  .ob-stepper button:active { transform: scale(.9); background: #1C1C1B; }
+  .ob-opts { margin-top: 28px; border-top: 1px solid #262624; }
+  .ob-opt { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 17px 0; border: none; border-bottom: 1px solid #262624; background: none; color: var(--night-muted); font-size: 18px; font-weight: 300; text-align: left; transition: color 450ms var(--ease), padding-left 550ms var(--ease); }
+  .ob-opt.on { color: #F4F3F1; padding-left: 10px; }
+  .ob-check { position: relative; width: 18px; height: 18px; border-radius: 50%; border: 1px solid #3A3A38; transition: border-color 400ms; }
+  .ob-check::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: #F4F3F1; transform: scale(0); transition: transform 450ms cubic-bezier(.3,1.4,.4,1); }
+  .ob-opt.on .ob-check { border-color: #F4F3F1; }
+  .ob-opt.on .ob-check::after { transform: scale(1); }
   /* Journal */
   .screen.white { background: #FFFFFF; }
   .j-prompt { font-size: 32px; font-weight: 200; letter-spacing: -0.02em; line-height: 1.18; color: var(--ink); transition: font-size 600ms var(--ease), color 600ms var(--ease), letter-spacing 600ms var(--ease); }
@@ -307,7 +359,8 @@
     settings: { mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', motion: 'on', routines: [], book: { title: '', author: '' } },
     days: {},
     timers: { mind: null, work: null },
-    ui: {}
+    ui: {},
+    profile: { name: '', done: false, step: 0, plan: null }
   });
 
   function migrateBody(days) {
@@ -329,7 +382,9 @@
           settings: { ...d.settings, ...s.settings, book: { ...d.settings.book, ...(s.settings && s.settings.book) } },
           days: migrateBody(s.days || {}),
           timers: { ...d.timers, ...s.timers },
-          ui: { ...d.ui, ...s.ui }
+          ui: { ...d.ui, ...s.ui },
+          // Anyone who already has history skips the intro.
+          profile: { ...d.profile, done: !s.profile && Object.keys(s.days || {}).length > 0, ...s.profile }
         };
       }
     } catch (e) { /* storage unavailable or corrupt */ }
@@ -458,7 +513,7 @@
     const kept = keptOf(d);
     const count = kept.filter(Boolean).length;
     const open = PILLARS.filter((k, i) => !kept[i]).map((k) => NAMES[k]);
-    const status = count === 4 ? 'All four kept.'
+    const status = count === 4 ? 'All four kept' + (S.profile.name ? ', ' + esc(S.profile.name) : '') + '.'
       : count + ' of 4. ' + (open.length === 1 ? open[0] + ' remains.' : open.slice(0, -1).join(', ') + ' and ' + open[open.length - 1] + ' remain.');
     const n = streak();
     const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -854,6 +909,114 @@
     '</section>';
   };
 
+  /* ---------- Onboarding ---------- */
+  const OB_PLANS = [
+    { id: 'ppl', name: 'Push · Pull · Legs', routines: [
+      ['Push', ['chest', 'shoulders', 'triceps']], ['Pull', ['back', 'traps', 'biceps']], ['Legs', ['quads', 'hamstrings', 'glutes', 'calves']]] },
+    { id: 'ul', name: 'Upper · Lower', routines: [
+      ['Upper', ['chest', 'back', 'shoulders', 'biceps', 'triceps']], ['Lower', ['quads', 'hamstrings', 'glutes', 'calves', 'core']]] },
+    { id: 'full', name: 'Full body', routines: [
+      ['Full body', ['chest', 'back', 'shoulders', 'quads', 'hamstrings', 'glutes', 'core']]] },
+    { id: 'bro', name: 'One muscle a day', routines: [
+      ['Chest', ['chest']], ['Back', ['back', 'traps']], ['Shoulders', ['shoulders']], ['Arms', ['biceps', 'triceps']], ['Legs', ['quads', 'hamstrings', 'glutes', 'calves']]] },
+    { id: 'own', name: 'I’ll build my own', routines: [] }
+  ];
+  const OB_GOALS = [
+    { pillar: 'Mind', label: 'Read', key: 'mindGoal', step: 5, min: 5, max: 120, fmt: (v) => v + ' min' },
+    { pillar: 'Work', label: 'Focus block', key: 'focusMins', step: 5, min: 10, max: 120, fmt: (v) => v + ' min' },
+    { pillar: 'Rest', label: 'Sleep', key: 'sleepGoal', step: 0.5, min: 5, max: 10, fmt: (v) => v + ' h' },
+    { pillar: 'Rest', label: 'Lights out', key: 'bedtime', step: 15, fmt: (v) => fmt12(v) }
+  ];
+
+  screens.welcome = () => {
+    const P = S.profile, g = S.settings, step = P.step || 0;
+    const top = (n) => '<div class="ob-top">' +
+        '<button class="ob-back" data-act="ob-back" aria-label="Back">' + I.back + '</button>' +
+        '<div class="ob-progress" aria-hidden="true">' + [1, 2, 3].map((i) => '<span class="' + (i < n ? 'on' : i === n ? 'on cur' : '') + '"></span>').join('') + '</div>' +
+        '<div class="ob-count">0' + n + ' / 03</div>' +
+      '</div>';
+    const pillars = '<div class="ob-pillars" aria-hidden="true">' + [0, 1, 2, 3].map((i) => '<span style="--d:' + i + '"><i></i></span>').join('') + '</div>';
+    let body;
+    if (step === 0) {
+      body =
+        '<div class="ob-hero">' +
+          '<div class="ob-mark">KEPT</div>' + pillars +
+          '<div class="ob-tag">Body. Mind. Work. Rest.<br>Keep all four, every day.</div>' +
+        '</div>' +
+        '<div class="stack" style="gap:14px;width:100%">' +
+          '<button class="btn ob-btn" data-act="ob-next">Begin</button>' +
+          '<div class="ob-note">About thirty seconds.</div>' +
+        '</div>';
+    } else if (step === 1) {
+      body = top(1) +
+        '<div class="ob-body">' +
+          '<div class="ob-kicker">You</div>' +
+          '<h1 class="ob-title">What should we<br>call you?</h1>' +
+          '<input id="ob-name" class="ob-input" autocomplete="given-name" autocapitalize="words" enterkeyhint="next" maxlength="24" placeholder="First name" aria-label="First name" value="' + esc(P.name || '') + '">' +
+        '</div>' +
+        '<button class="btn ob-btn" id="ob-cta" data-act="ob-next">' + (P.name ? 'Continue' : 'Skip') + '</button>';
+    } else if (step === 2) {
+      body = top(2) +
+        '<div class="ob-body">' +
+          '<div class="ob-kicker">Your standard</div>' +
+          '<h1 class="ob-title">Set the bar.</h1>' +
+          '<div class="ob-sub">What a kept day means to you. You can change it anytime.</div>' +
+          '<div class="ob-goals">' + OB_GOALS.map((o) =>
+            '<div class="ob-goal">' +
+              '<div><div class="ob-goal-k">' + o.pillar + '</div><div class="ob-goal-l">' + o.label + '</div></div>' +
+              '<div class="ob-stepper">' +
+                '<button data-act="ob-goal" data-k="' + o.key + '" data-v="-1" aria-label="Less ' + o.label + '">−</button>' +
+                '<span>' + o.fmt(g[o.key]) + '</span>' +
+                '<button data-act="ob-goal" data-k="' + o.key + '" data-v="1" aria-label="More ' + o.label + '">+</button>' +
+              '</div>' +
+            '</div>').join('') +
+          '</div>' +
+        '</div>' +
+        '<button class="btn ob-btn" data-act="ob-next">Continue</button>';
+    } else if (step === 3) {
+      body = top(3) +
+        '<div class="ob-body">' +
+          '<div class="ob-kicker">Body</div>' +
+          '<h1 class="ob-title">How do you train?</h1>' +
+          '<div class="ob-sub">Kept tracks every muscle either way. This just sets up one-tap routines.</div>' +
+          '<div class="ob-opts" role="radiogroup" aria-label="Training style">' + OB_PLANS.map((pl) =>
+            '<button class="ob-opt' + (P.plan === pl.id ? ' on' : '') + '" role="radio" aria-checked="' + (P.plan === pl.id) + '" data-act="ob-plan" data-v="' + pl.id + '">' +
+              '<span>' + pl.name + '</span><span class="ob-check"></span></button>').join('') +
+          '</div>' +
+        '</div>' +
+        '<button class="btn ob-btn" data-act="ob-next">' + (P.plan ? 'Continue' : 'Skip') + '</button>';
+    } else {
+      body =
+        '<div class="ob-hero">' + pillars +
+          '<h1 class="ob-title center">' + (P.name ? 'Welcome, ' + esc(P.name) + '.' : 'Welcome.') + '</h1>' +
+          '<div class="ob-tag">Day one starts now.</div>' +
+        '</div>' +
+        '<button class="btn ob-btn" data-act="ob-finish">Enter</button>';
+    }
+    return '<section class="screen ob" data-step="' + step + '">' + body + '</section>';
+  };
+
+  function obGo(step) {
+    S.profile.step = Math.max(0, Math.min(4, step));
+    save();
+    if (navigator.vibrate) navigator.vibrate(6);
+    render();
+    if (step === 1) setTimeout(() => { const i = document.getElementById('ob-name'); if (i && !i.value) i.focus({ preventScroll: true }); }, 520);
+  }
+  function obFinish() {
+    const P = S.profile;
+    const plan = OB_PLANS.find((x) => x.id === P.plan);
+    if (plan && plan.routines.length) {
+      S.settings.routines = plan.routines.map((r, i) => ({ id: plan.id + '-' + i + '-' + Date.now().toString(36), name: r[0], muscles: r[1].slice() }));
+    }
+    P.done = true;
+    P.step = 0;
+    save();
+    if (navigator.vibrate) navigator.vibrate([8, 60, 8]);
+    location.hash = '#/today';
+    render();
+  }
+
   /* ---------- Overlays ---------- */
   const $screen = document.getElementById('screen');
   const $overlay = document.getElementById('overlay');
@@ -1131,7 +1294,9 @@
     const g = S.settings;
     openSheet(
       '<h3>Settings</h3>' +
-      '<div class="grid2" style="margin-top:24px;row-gap:22px">' +
+      '<label class="field-label" for="g-name" style="margin-top:24px">Name</label>' +
+      '<input id="g-name" class="field sm" maxlength="24" autocomplete="given-name" value="' + esc(S.profile.name || '') + '" placeholder="First name">' +
+      '<div class="grid2" style="margin-top:22px;row-gap:22px">' +
         '<div><label class="field-label" for="g-mind">Reading goal (min)</label><input id="g-mind" class="field sm" type="number" min="1" max="240" value="' + g.mindGoal + '"></div>' +
         '<div><label class="field-label" for="g-focus">Focus block (min)</label><input id="g-focus" class="field sm" type="number" min="1" max="180" value="' + g.focusMins + '"></div>' +
         '<div><label class="field-label" for="g-sleep">Sleep goal (h)</label><input id="g-sleep" class="field sm" type="number" min="1" max="12" step="0.5" value="' + g.sleepGoal + '"></div>' +
@@ -1147,6 +1312,7 @@
       '<div class="stack" style="gap:10px;margin-top:12px">' +
         '<button class="btn ghost" data-act="export">Export data</button>' +
         '<button class="btn ghost" data-act="import">Import data</button>' +
+        '<button class="btn ghost" data-act="replay-intro">Replay intro</button>' +
         '<button class="btn ghost" data-act="demo">Load sample month</button>' +
         '<button class="btn ghost" data-act="wipe" style="color:#9B2C2C">Erase everything</button>' +
       '</div>'
@@ -1528,6 +1694,28 @@
       }
       case 'sleep-clear': day().sleep = null; save(); closeOverlay(); render(); break;
       case 'settings': openSettings(); break;
+      case 'replay-intro':
+        S.profile.done = false; S.profile.step = 0; save(); closeOverlay(true); location.hash = '#/welcome'; render(); break;
+      case 'ob-next': {
+        const nm = document.getElementById('ob-name');
+        if (nm) S.profile.name = nm.value.trim();
+        obGo((S.profile.step || 0) + 1); break;
+      }
+      case 'ob-back': obGo((S.profile.step || 0) - 1); break;
+      case 'ob-plan': S.profile.plan = S.profile.plan === el.dataset.v ? null : el.dataset.v; save(); render(); break;
+      case 'ob-goal': {
+        const o = OB_GOALS.find((x) => x.key === el.dataset.k);
+        const dir = +el.dataset.v;
+        if (o.key === 'bedtime') {
+          const [h, m] = S.settings.bedtime.split(':').map(Number);
+          const t = (((h * 60 + m + dir * o.step) % 1440) + 1440) % 1440;
+          S.settings.bedtime = pad(Math.floor(t / 60)) + ':' + pad(t % 60);
+        } else {
+          S.settings[o.key] = Math.min(o.max, Math.max(o.min, Math.round((S.settings[o.key] + dir * o.step) * 2) / 2));
+        }
+        save(); render(); break;
+      }
+      case 'ob-finish': obFinish(); break;
       case 'settings-save': {
         const num = (id, lo, hi, def) => { const v = parseFloat(document.getElementById(id).value); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def; };
         const g = S.settings;
@@ -1535,6 +1723,7 @@
         g.focusMins = Math.round(num('g-focus', 1, 180, g.focusMins));
         g.sleepGoal = num('g-sleep', 1, 12, g.sleepGoal);
         g.bedtime = document.getElementById('g-bed').value || g.bedtime;
+        S.profile.name = document.getElementById('g-name').value.trim();
         save(); closeOverlay(); render(); toast('Saved'); break;
       }
       case 'motion': {
@@ -1557,6 +1746,10 @@
 
   document.addEventListener('input', (e) => {
     if (e.target.id === 'one-thing') { day().oneThing = e.target.value; save(); }
+    if (e.target.id === 'ob-name') {
+      S.profile.name = e.target.value.trim(); save();
+      const cta = document.getElementById('ob-cta'); if (cta) cta.textContent = S.profile.name ? 'Continue' : 'Skip';
+    }
     if (e.target.id === 'j-text') {
       const ta = e.target;
       const dr = jDraft(); dr.answers[dr.step] = ta.value; save(); growText(ta);
@@ -1567,12 +1760,17 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlayOpen()) closeOverlay();
     if (e.key === 'Enter' && e.target.id === 'one-thing') e.target.blur();
+    if (e.key === 'Enter' && e.target.id === 'ob-name') { e.preventDefault(); const b = document.getElementById('ob-cta'); if (b) b.click(); }
     if (e.key === 'Enter' && e.target.id === 'rname') { const b = document.querySelector('[data-act="routine-save-confirm"]'); if (b) b.click(); }
   });
   window.addEventListener('resize', () => { placeMark(); fitCard(); });
 
   /* ---------- Router & loop ---------- */
-  const route = () => { const r = location.hash.replace(/^#\/?/, '') || 'today'; return screens[r] ? r : 'today'; };
+  const route = () => {
+    if (!S.profile.done) return 'welcome';
+    const r = location.hash.replace(/^#\/?/, '') || 'today';
+    return screens[r] ? r : 'today';
+  };
   let lastDay = todayKey();
 
   /* Count-up numbers: any element with data-count tweens between values. */
@@ -1629,7 +1827,7 @@
     const tpl = document.createElement('template');
     tpl.innerHTML = screens[r]().trim();
     const next = tpl.content.firstElementChild;
-    next.dataset.route = r + (r === 'mind' && S.timers.mind ? ':session' : '');
+    next.dataset.route = r + (r === 'mind' && S.timers.mind ? ':session' : '') + (r === 'welcome' ? ':' + (S.profile.step || 0) : '');
     const old = [...$screen.children].find((c) => !c.classList.contains('leave'));
 
     if (old && old.dataset.route === next.dataset.route && !force) {
@@ -1638,7 +1836,8 @@
       keep.forEach((c) => old.classList.add(c));
     } else {
       const from = old ? old.dataset.route.split(':')[0] : null;
-      const dir = !old || r === 'journal' || from === 'journal' ? 'fade' : from === r ? 'fade' : DEPTH[r] > DEPTH[from] ? 'fwd' : DEPTH[r] < DEPTH[from] ? 'back' : 'fade';
+      const dir = from === 'welcome' && r === 'welcome' ? (+next.dataset.step > +old.dataset.step ? 'fwd' : 'back')
+        : !old || r === 'journal' || from === 'journal' ? 'fade' : from === r ? 'fade' : DEPTH[r] > DEPTH[from] ? 'fwd' : DEPTH[r] < DEPTH[from] ? 'back' : 'fade';
       if (old) {
         old.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
         old.classList.remove('enter', 'enter-fwd', 'enter-back', 'enter-fade');
@@ -1652,7 +1851,7 @@
     }
     document.title = r === 'today' ? 'Kept' : 'Kept · ' + r[0].toUpperCase() + r.slice(1);
     const night = r === 'mind' && S.timers.mind;
-    document.querySelector('meta[name="theme-color"]').content = night ? '#0B0B0B' : r === 'journal' ? '#FFFFFF' : '#F4F3F1';
+    document.querySelector('meta[name="theme-color"]').content = night || r === 'welcome' ? '#0B0B0B' : r === 'journal' ? '#FFFFFF' : '#F4F3F1';
     const jt = document.getElementById('j-text'); if (jt) growText(jt);
   }
   window.addEventListener('hashchange', () => { if (route() !== 'journal') stopListening(); closeOverlay(); render(); });
