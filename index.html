@@ -139,7 +139,7 @@
   .bars { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; justify-items: center; }
   .bar { width: 14px; transform-origin: bottom; transition: height 600ms var(--ease), background 400ms; }
   .enter .bar { animation: grow-y 700ms var(--ease) both; animation-delay: calc(300ms + var(--d) * 50ms); }
-  .enter .cal > div { animation: pop 420ms var(--ease) both; animation-delay: calc(200ms + var(--d) * 14ms); }
+  .enter .cal > * { animation: pop 420ms var(--ease) both; animation-delay: calc(200ms + var(--d) * 14ms); }
   .enter .spark { stroke-dasharray: 1; animation: draw 1100ms var(--ease) both; animation-delay: 350ms; }
   .enter .spark-dot { animation: pop 400ms var(--ease) both; animation-delay: 1300ms; }
   .work-bar { transition: width 400ms linear; }
@@ -229,8 +229,59 @@
 
   /* Progress calendar */
   .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 14px; }
-  .cal div { height: 18px; border-radius: 2px; }
+  .cal > * { height: 18px; border-radius: 2px; border: none; padding: 0; }
+  .cal > button { cursor: pointer; transition: transform 160ms var(--ease); }
+  .cal > button:active { transform: scale(.85); }
+  .cal > .grace { background: transparent !important; box-shadow: inset 0 0 0 1px var(--ink); }
 
+  /* Day view, archive, week review, lifts */
+  .calnav, .daynav button { width: 36px; height: 36px; border: none; background: none; color: var(--ink); display: flex; align-items: center; justify-content: center; transition: opacity 200ms; }
+  .calnav:active, .daynav button:active { opacity: .4; }
+  .calnav:disabled, .daynav button:disabled { opacity: .18; cursor: default; }
+  .calnav:first-child { margin-left: -10px; }
+  .calnav:last-child { margin-right: -10px; }
+  .daynav { display: flex; gap: 2px; margin-right: -10px; }
+  .mrow.static.tight { margin-top: 0; border-top: none; }
+  a.mrow { text-decoration: none; }
+  .dsec { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--ink); }
+  .dlabel { font-size: 15px; font-weight: 400; }
+  .dstate { font-size: 12px; color: var(--muted); transition: color 300ms; }
+  .dstate.on { color: var(--ink); }
+  .drow { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 46px; border: none; border-bottom: 1px solid var(--faint); background: none; padding: 0; font-size: 15px; font-weight: 300; color: var(--ink); text-align: left; }
+  .dstep { display: flex; align-items: center; gap: 10px; }
+  .dstep span { min-width: 64px; text-align: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .dstep button { width: 32px; height: 32px; border-radius: 16px; border: 1px solid var(--line); background: none; font-size: 16px; font-weight: 200; display: flex; align-items: center; justify-content: center; transition: transform 160ms var(--ease), background 200ms; }
+  .dstep button:active { transform: scale(.9); background: var(--faint); }
+  .chips.wrap { flex-wrap: wrap; overflow: visible; margin: 12px 0 4px; padding: 0; }
+  .chips.wrap .chip { height: 30px; padding: 0 12px; }
+  .egroup { padding-top: 20px; }
+  .ehead { border: none; background: none; padding: 0 0 6px; font-size: 13px; font-weight: 400; color: var(--ink); }
+  .wcols { margin-top: 28px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); justify-items: center; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 10px 0 8px; }
+  .wcol { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .wcol em { font-style: normal; font-size: 11px; color: var(--muted); }
+  .wbar { position: relative; display: block; width: 16px; height: 110px; border: 1px solid var(--ink); overflow: hidden; }
+  .wbar.grace { border-color: var(--muted); }
+  .wbar.grace i { background: var(--muted); }
+  .wbar i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--ink); transform-origin: bottom; transition: height 600ms var(--ease); }
+  .enter .wbar i { animation: grow-y 800ms var(--ease) both; animation-delay: calc(250ms + var(--d) * 60ms); }
+  .wrows { margin-top: 20px; }
+  .wsec { margin-top: 24px; border-top: 1px solid var(--faint); padding-top: 14px; }
+  .wrow { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--faint); font-size: 15px; }
+  .wrow > span:last-child { text-align: right; font-size: 14px; }
+  .wmus { margin-top: 24px; display: flex; align-items: center; gap: 16px; }
+  .wquote { margin: 10px 0 0; font-size: 20px; font-weight: 300; line-height: 1.45; letter-spacing: -0.01em; }
+  .pr { font-size: 12px; font-weight: 400; color: var(--ink); }
+  .lift-group { padding: 12px 0; border-top: 1px solid var(--faint); font-size: 15px; }
+  .lift-sets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .lset { display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 2px 0 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); font-size: 13px; font-variant-numeric: tabular-nums; animation: swap 360ms var(--ease) both; }
+  .lset button { width: 24px; height: 24px; border: none; border-radius: 12px; background: none; color: var(--muted); font-size: 15px; line-height: 1; }
+  .card-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); justify-items: center; padding: 8px 0; }
+  .card-week span { position: relative; display: block; width: 14px; height: 150px; border: 1px solid #F4F3F1; overflow: hidden; }
+  .card-week i { position: absolute; left: 0; right: 0; bottom: 0; background: #F4F3F1; transform-origin: bottom; }
+  .share .card-week i { animation: grow-y 800ms var(--ease) both; animation-delay: calc(380ms + var(--d) * 70ms); }
+  .card-letters { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); justify-items: center; margin-top: 8px; font-size: 11px; color: var(--night-muted); }
+  .card-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 24px; font-size: 15px; }
+  .card-stats em { display: block; margin-top: 2px; font-style: normal; font-size: 11px; color: var(--night-muted); }
   /* Onboarding */
   .screen.ob { background: var(--night); color: #F4F3F1; padding: var(--top) 28px var(--bottom); }
   .ob-top { display: grid; grid-template-columns: 44px 1fr 56px; align-items: center; gap: 12px; }
@@ -356,7 +407,7 @@
   const NAMES = { body: 'Body', mind: 'Mind', work: 'Work', rest: 'Rest' };
 
   const defaults = () => ({
-    settings: { mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', motion: 'on', routines: [], book: { title: '', author: '' } },
+    settings: { mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', motion: 'on', unit: 'lb', routines: [], book: { title: '', author: '' } },
     days: {},
     timers: { mind: null, work: null },
     ui: {},
@@ -436,12 +487,38 @@
   }
   const keptOf = (d) => { const p = progress(d); return PILLARS.map((k) => p[k] >= 1); };
   const allKept = (d) => keptOf(d).every(Boolean);
-  function streak() {
+  // Grace days: up to 2 missed days a month are forgiven automatically, but only when a kept day
+  // comes before them, so they bridge gaps inside a streak and never pad its start.
+  // Covered days don't add to the count.
+  const GRACE_PER_MONTH = 2;
+  const monthKey = (d) => d.getFullYear() + '-' + d.getMonth();
+  function streakInfo() {
+    const covered = new Set();
+    const used = {};
     let d = new Date();
     if (!allKept(peek(keyOf(d)))) d = addDays(d, -1);
-    let n = 0;
-    while (allKept(peek(keyOf(d))) && n < 3650) { n++; d = addDays(d, -1); }
-    return n;
+    let n = 0, pending = [];
+    for (let i = 0; i < 3650; i++) {
+      const k = keyOf(d);
+      if (allKept(peek(k))) {
+        n++;
+        pending.forEach((x) => { covered.add(x.k); used[x.m] = (used[x.m] || 0) + 1; });
+        pending = [];
+      } else {
+        const m = monthKey(d);
+        if ((used[m] || 0) + pending.filter((x) => x.m === m).length >= GRACE_PER_MONTH) break;
+        pending.push({ k, m });
+      }
+      d = addDays(d, -1);
+    }
+    return { n, covered };
+  }
+  function streak() { return streakInfo().n; }
+  function graceLeft() {
+    const m = monthKey(new Date());
+    let u = 0;
+    streakInfo().covered.forEach((k) => { if (monthKey(fromKey(k)) === m) u++; });
+    return GRACE_PER_MONTH - u;
   }
   const bodyOf = (d) => ({ muscles: (d.body && d.body.muscles) || [], cardio: (d.body && d.body.cardio) || 0 });
   const bodyKept = (d) => { const b = bodyOf(d); return b.muscles.length > 0 || b.cardio > 0; };
@@ -486,6 +563,71 @@
     if (st) return { title: GROUP[st.id].name, sub: 'Last trained ' + dayWord(st.n) + ' ago.' };
     return { title: 'Your call', sub: 'Log a session and Kept will suggest what comes next.' };
   }
+  // ----- Lifts (optional weight × reps per exercise) -----
+  const EXERCISES = {
+    chest: ['Bench press', 'Incline dumbbell press', 'Push-up', 'Cable fly'],
+    shoulders: ['Overhead press', 'Lateral raise', 'Rear delt fly'],
+    traps: ['Shrug', 'Face pull'],
+    back: ['Pull-up', 'Barbell row', 'Lat pulldown', 'Seated row'],
+    biceps: ['Barbell curl', 'Hammer curl'],
+    triceps: ['Triceps pushdown', 'Dips', 'Skull crusher'],
+    core: ['Hanging leg raise', 'Cable crunch', 'Plank'],
+    glutes: ['Hip thrust', 'Bulgarian split squat'],
+    quads: ['Squat', 'Leg press', 'Leg extension'],
+    hamstrings: ['Romanian deadlift', 'Leg curl', 'Deadlift'],
+    calves: ['Calf raise', 'Seated calf raise']
+  };
+  const liftsOf = (d) => d.lifts || [];
+  // Estimated one-rep max (Epley); bodyweight sets compare on reps.
+  const e1rm = (x) => (x.w > 0 ? x.w * (1 + x.r / 30) : x.r);
+  const fmtSet = (x) => (x.w > 0 ? x.w + ' × ' + x.r : x.r + ' reps');
+  const sameEx = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
+  function bestBefore(ex, k) {
+    let best = null;
+    Object.keys(S.days).forEach((dk) => {
+      if (dk >= k) return;
+      liftsOf(S.days[dk]).forEach((x) => { if (sameEx(x.ex, ex) && (!best || e1rm(x) > e1rm(best))) best = x; });
+    });
+    return best;
+  }
+  function lastSession(ex, k) {
+    const keys = Object.keys(S.days).filter((dk) => dk < k).sort().reverse();
+    for (const dk of keys) {
+      const sets = liftsOf(S.days[dk]).filter((x) => sameEx(x.ex, ex));
+      if (sets.length) return { k: dk, sets };
+    }
+    return null;
+  }
+  function exerciseSuggestions(k) {
+    const muscles = bodyOf(peek(k)).muscles;
+    const used = [];
+    Object.keys(S.days).sort().reverse().forEach((dk) => liftsOf(S.days[dk]).forEach((x) => { if (!used.some((u) => sameEx(u, x.ex))) used.push(x.ex); }));
+    const forMuscles = muscles.flatMap((m) => EXERCISES[m] || []);
+    const list = [];
+    const add = (x) => { if (x && !list.some((y) => sameEx(y, x))) list.push(x); };
+    liftsOf(peek(k)).forEach((x) => add(x.ex));
+    forMuscles.filter((x) => used.some((u) => sameEx(u, x))).forEach(add);
+    forMuscles.forEach(add);
+    used.forEach(add);
+    return list;
+  }
+  // Personal bests set between two dates (inclusive), measured against everything before the start.
+  function prsBetween(startKey, endKey) {
+    const top = {};
+    Object.keys(S.days).filter((k) => k >= startKey && k <= endKey).sort().forEach((k) => liftsOf(S.days[k]).forEach((x) => {
+      const id = x.ex.trim().toLowerCase();
+      if (!top[id] || e1rm(x) > e1rm(top[id].x)) top[id] = { x, k };
+    }));
+    return Object.values(top)
+      .map((t) => ({ x: t.x, k: t.k, prev: bestBefore(t.x.ex, startKey) }))
+      .filter((t) => t.prev && e1rm(t.x) > e1rm(t.prev));
+  }
+  const entryHtml = (e) => '<div class="entry"><div class="small" style="margin-bottom:6px">' +
+    new Date(e.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + '</div>' +
+    (e.qa
+      ? e.qa.map((x) => '<div class="small" style="margin-top:8px">' + esc(x.q) + '</div><div>' + esc(x.a) + '</div>').join('')
+      : (e.prompt ? '<div class="small">' + esc(e.prompt) + '</div>' : '') + esc(e.text || '')) +
+    '</div>';
   const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
   const routineFor = (sel) => (sel.length ? S.settings.routines.find((r) => sameSet(r.muscles, sel)) : null);
   const groupNames = (ids) => GROUPS.filter((g) => ids.includes(g.id)).map((g) => g.name);
@@ -501,7 +643,12 @@
     micLg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
     gear: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
   };
-  const backLink = '<a class="back" href="#/today" aria-label="Back to today">' + I.back + 'Today</a>';
+  I.fwd = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+  const backTo = (hash, label) => '<a class="back" href="' + hash + '" aria-label="Back to ' + label + '">' + I.back + label + '</a>';
+  const backLink = backTo('#/today', 'Today');
+  const navPair = (act, prevLabel, nextLabel, nextDisabled) => '<div class="daynav">' +
+    '<button data-act="' + act + '" data-v="-1" aria-label="' + prevLabel + '">' + I.back + '</button>' +
+    '<button data-act="' + act + '" data-v="1" aria-label="' + nextLabel + '"' + (nextDisabled ? ' disabled' : '') + '>' + I.fwd + '</button></div>';
   const header = (left, right) => '<div class="row">' + left + right + '</div>';
 
   /* ---------- Screens ---------- */
@@ -539,6 +686,7 @@
         '<div class="pillars" style="margin-top:14px">' + labels + '</div>' +
       '</div>' +
       '<div class="push stack" style="gap:20px;padding-top:32px">' +
+        (new Date().getDay() === 0 ? '<button class="link" data-act="open-week" data-v="0" style="align-self:center">Your week in review</button>' : '') +
         '<div class="muted center">' + status + '</div>' +
         '<div style="display:flex;gap:10px">' +
           '<button class="btn" data-act="journal">' + I.mic + 'Journal</button>' +
@@ -625,7 +773,10 @@
           '<span class="mdays">' + (r.today ? 'Today' : r.n == null ? 'Not yet' : dayWord(r.n) + (r.due ? ' · due' : '')) + '</span>' +
         '</button>').join('') +
     '</div>';
-    const cardio = '<button class="mrow static' + (b.cardio ? ' today' : '') + '" data-act="cardio-open">' +
+    const nSets = liftsOf(d).length;
+    const lifts = '<button class="mrow static" data-act="lifts-open" data-v="' + todayKey() + '">' +
+      '<span>Lifts</span><span class="mdays">' + (nSets ? nSets + (nSets === 1 ? ' set' : ' sets') + ' today' : 'Add weights') + '</span></button>';
+    const cardio = '<button class="mrow static tight' + (b.cardio ? ' today' : '') + '" data-act="cardio-open">' +
       '<span>Cardio</span><span class="mdays">' + (b.cardio ? 'Today · ' + b.cardio + ' min' : cd == null ? 'Not yet' : dayWord(cd)) + '</span></button>';
     const tabs = routines.map((r) => '<button class="rtab' + (r === routine ? ' on' : '') + '" data-act="routine" data-v="' + r.id + '" aria-pressed="' + (r === routine) + '">' + esc(r.name) + '</button>').join('') +
       (sel.length && !routine ? '<button class="rtab add" data-act="routine-save">+ Save</button>' : '') +
@@ -642,6 +793,7 @@
         '<div style="flex-shrink:0;width:120px">' + figureSvg(sel, '#111111', 120) + '</div>' +
       '</div>' +
       list +
+      lifts +
       cardio +
       '<div class="push row" style="padding-top:28px;align-items:flex-end;gap:16px">' +
         '<div class="muted" style="width:44px;line-height:1.3;flex-shrink:0">Log today</div>' +
@@ -855,19 +1007,32 @@
     const g = S.settings;
     const first = new Date(now.getFullYear(), now.getMonth(), 1);
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const info = streakInfo();
 
-    // Calendar of kept days
-    const lead = (first.getDay() + 6) % 7;
+    // Calendar of kept days, browsable by month; every past day opens for editing.
+    const off = Math.min(0, S.ui.calOffset || 0);
+    const cm = new Date(now.getFullYear(), now.getMonth() + off, 1);
+    const cmDays = new Date(cm.getFullYear(), cm.getMonth() + 1, 0).getDate();
+    const lead = (cm.getDay() + 6) % 7;
     let cal = '';
     for (let i = 0; i < lead; i++) cal += '<div></div>';
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dt = new Date(now.getFullYear(), now.getMonth(), i);
-      const isToday = i === now.getDate();
-      const future = dt > now && !isToday;
-      const n = keptOf(peek(keyOf(dt))).filter(Boolean).length;
+    for (let i = 1; i <= cmDays; i++) {
+      const dt = new Date(cm.getFullYear(), cm.getMonth(), i);
+      const k = keyOf(dt);
+      const isToday = k === todayKey();
+      const future = k > todayKey();
+      const n = keptOf(peek(k)).filter(Boolean).length;
+      const grace = info.covered.has(k);
       const bg = future ? 'transparent' : n === 4 ? 'var(--ink)' : n === 0 ? 'var(--faint)' : 'rgba(17,17,17,' + (0.15 + n * 0.18) + ')';
-      cal += '<div data-i="' + i + '" title="' + dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + n + ' of 4" style="background:' + bg + ';' + (future ? 'border:1px solid var(--line);' : '') + (isToday ? 'outline:1px solid var(--ink);outline-offset:2px;' : '') + '--d:' + i + '"></div>';
+      const label = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + (grace ? 'grace day' : n + ' of 4');
+      const style = 'background:' + bg + ';' + (future ? 'border:1px solid var(--line);' : '') + (isToday ? 'outline:1px solid var(--ink);outline-offset:2px;' : '') + '--d:' + i;
+      cal += future
+        ? '<div style="' + style + '"></div>'
+        : '<button class="' + (grace ? 'grace' : '') + '" data-act="open-day" data-v="' + k + '" aria-label="' + label + '" title="' + label + '" style="' + style + '"></button>';
     }
+    const left = graceLeft();
+    const wk = weekData(0);
+    const nEntries = Object.values(S.days).reduce((a, d) => a + (d.journal || []).length, 0);
 
     // Body sessions sparkline (cumulative this month)
     let cum = 0;
@@ -887,11 +1052,21 @@
     const tile = (label, value, sub) => '<div><div class="muted">' + label + '</div><div class="num" style="margin-top:6px;font-size:40px;letter-spacing:-.03em">' + value + '</div>' + (sub ? '<div class="muted" style="margin-top:4px">' + sub + '</div>' : '') + '</div>';
 
     return '<section class="screen">' +
-      header(backLink, '<div class="muted">' + now.toLocaleDateString('en-US', { month: 'long' }) + '</div>') +
+      header(backLink, '<div class="wordmark">KEPT</div>') +
       '<div class="stack" style="margin-top:28px;gap:44px">' +
         '<div>' +
-          '<div class="row"><div class="muted">Days kept</div><div style="font-size:13px"><span data-count="' + streak() + '">' + streak() + '</span> in a row</div></div>' +
+          '<div class="row"><div class="muted">Days kept</div><div style="font-size:13px"><span data-count="' + info.n + '">' + info.n + '</span> in a row</div></div>' +
+          '<div class="row" style="margin-top:10px">' +
+            '<button class="calnav" data-act="cal-nav" data-v="-1" aria-label="Previous month">' + I.back + '</button>' +
+            '<div style="font-size:13px" data-key="m' + off + '">' + cm.toLocaleDateString('en-US', { month: 'long', year: cm.getFullYear() === now.getFullYear() ? undefined : 'numeric' }) + '</div>' +
+            '<button class="calnav" data-act="cal-nav" data-v="1" aria-label="Next month"' + (off >= 0 ? ' disabled' : '') + '>' + I.fwd + '</button>' +
+          '</div>' +
           '<div class="cal">' + cal + '</div>' +
+          '<div class="row small" style="margin-top:12px"><span>Tap a day to edit it</span><span>' + left + (left === 1 ? ' grace day' : ' grace days') + ' left this month</span></div>' +
+          '<div style="margin-top:8px">' +
+            '<button class="mrow static" data-act="open-week" data-v="0"><span>This week</span><span class="mdays">' + wk.kept + ' of ' + wk.elapsed + ' kept ›</span></button>' +
+            '<a class="mrow static tight" href="#/entries"><span>Journal</span><span class="mdays">' + nEntries + (nEntries === 1 ? ' entry' : ' entries') + ' ›</span></a>' +
+          '</div>' +
         '</div>' +
         '<div>' +
           '<div class="muted">Body · sessions this month</div>' +
@@ -908,6 +1083,202 @@
       '<div class="push" style="padding-top:40px"><button class="btn ghost" data-act="settings">' + I.gear + 'Settings</button></div>' +
     '</section>';
   };
+
+  /* ---------- Day view (edit any past day) ---------- */
+  function dayKeyOpen() {
+    const k = S.ui.dayKey;
+    return k && k <= todayKey() ? k : todayKey();
+  }
+  screens.day = () => {
+    const k = dayKeyOpen();
+    const dt = fromKey(k), d = peek(k), kept = keptOf(d), b = bodyOf(d);
+    const n = kept.filter(Boolean).length;
+    const grace = streakInfo().covered.has(k);
+    const isToday = k === todayKey();
+    const status = n === 4 ? 'All four kept.' : grace ? n + ' of 4. Covered by a grace day.' : n + ' of 4 kept.';
+    const sec = (i, name, inner) => '<div class="dsec"><div class="row"><div class="dlabel">' + name + '</div>' +
+      '<div class="dstate' + (kept[i] ? ' on' : '') + '">' + (kept[i] ? 'Kept' : 'Open') + '</div></div>' + inner + '</div>';
+    const stepper = (label, value, f, step) => '<div class="drow"><div>' + label + '</div><div class="dstep">' +
+      '<button data-act="day-num" data-f="' + f + '" data-v="' + (-step) + '" aria-label="Less ' + label + '">−</button>' +
+      '<span>' + value + '</span>' +
+      '<button data-act="day-num" data-f="' + f + '" data-v="' + step + '" aria-label="More ' + label + '">+</button></div></div>';
+    const sets = liftsOf(d).length;
+    const entries = d.journal || [];
+    return '<section class="screen" data-step="' + Math.round(dt.getTime() / 86400000) + '">' +
+      header(backTo('#/progress', 'Progress'), navPair('day-nav', 'Previous day', 'Next day', isToday)) +
+      '<div style="margin-top:20px">' +
+        '<div class="muted">' + (isToday ? 'Today' : dt.toLocaleDateString('en-US', { weekday: 'long' })) + '</div>' +
+        '<div class="num" style="margin-top:6px;font-size:40px;letter-spacing:-.03em;line-height:1">' + dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '</div>' +
+        '<div class="muted" style="margin-top:10px">' + status + '</div>' +
+      '</div>' +
+      sec(0, 'Body',
+        '<div class="chips wrap">' + GROUPS.map((gr) => '<button class="chip' + (b.muscles.includes(gr.id) ? ' on' : '') + '" data-act="day-muscle" data-v="' + gr.id + '" aria-pressed="' + b.muscles.includes(gr.id) + '">' + gr.name + '</button>').join('') + '</div>' +
+        stepper('Cardio', b.cardio + ' min', 'cardio', 5) +
+        '<button class="drow dlink" data-act="lifts-open" data-v="' + k + '"><span>Lifts</span><span class="muted">' + (sets ? sets + (sets === 1 ? ' set' : ' sets') : 'Add weights') + ' ›</span></button>') +
+      sec(1, 'Mind', stepper('Read', (d.mindMins || 0) + ' min', 'mindMins', 5)) +
+      sec(2, 'Work', stepper('Deep work', fmtHM(d.workMins || 0), 'workMins', 10) +
+        (d.oneThing ? '<div class="drow"><div class="muted">One thing</div><div style="text-align:right;max-width:62%;overflow-wrap:anywhere">' + esc(d.oneThing) + '</div></div>' : '')) +
+      sec(3, 'Rest',
+        '<div class="grid2" style="margin-top:12px">' +
+          '<div><label class="field-label" for="day-bed">Asleep</label><input id="day-bed" class="field sm" type="time" value="' + (d.sleep ? d.sleep.bed : '') + '"></div>' +
+          '<div><label class="field-label" for="day-wake">Awake</label><input id="day-wake" class="field sm" type="time" value="' + (d.sleep ? d.sleep.wake : '') + '"></div>' +
+        '</div>' +
+        (d.sleep ? '<div class="drow"><div class="muted">' + fmtHM(d.sleep.mins) + ' of sleep</div><button class="link" data-act="day-sleep-clear" style="color:var(--muted)">Clear</button></div>' : '')) +
+      '<div class="dsec"><div class="row"><div class="dlabel">Journal</div>' + (entries.length ? '<a class="small" href="#/entries" style="color:var(--muted)">All entries ›</a>' : '') + '</div>' +
+        (entries.length ? entries.map(entryHtml).join('') : '<div class="muted" style="margin-top:10px">No entry this day.</div>') +
+      '</div>' +
+    '</section>';
+  };
+
+  /* ---------- Journal archive ---------- */
+  screens.entries = () => {
+    const q = (S.ui.q || '').trim().toLowerCase();
+    const textOf = (e) => (e.qa ? e.qa.map((x) => x.q + ' ' + x.a).join(' ') : (e.prompt || '') + ' ' + (e.text || '')).toLowerCase();
+    const keys = Object.keys(S.days).filter((k) => (S.days[k].journal || []).length).sort().reverse();
+    const all = keys.reduce((a, k) => a + S.days[k].journal.length, 0);
+    const groups = keys.map((k) => {
+      const es = S.days[k].journal.filter((e) => !q || textOf(e).includes(q));
+      return es.length
+        ? '<div class="egroup" data-key="g' + k + '"><button class="ehead" data-act="open-day" data-v="' + k + '">' +
+            fromKey(k).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' }) + ' ›</button>' +
+            es.slice().reverse().map(entryHtml).join('') + '</div>'
+        : '';
+    }).join('');
+    return '<section class="screen">' +
+      header(backTo('#/progress', 'Progress'), '<div class="wordmark">KEPT</div>') +
+      '<div style="margin-top:28px">' +
+        '<div class="muted">Journal</div>' +
+        '<div class="num" style="margin-top:6px;font-size:44px;letter-spacing:-.03em;line-height:1"><span data-count="' + all + '">' + all + '</span> ' + (all === 1 ? 'entry' : 'entries') + '</div>' +
+      '</div>' +
+      (all ? '<input id="entry-q" class="field sm" type="search" enterkeyhint="search" placeholder="Search your answers" autocomplete="off" value="' + esc(S.ui.q || '') + '" style="margin-top:24px">' : '') +
+      '<div style="margin-top:8px">' + (groups || '<div class="muted" data-key="empty" style="padding:24px 0">' +
+        (all ? 'Nothing matches “' + esc(q) + '”.' : 'No entries yet. Your answers will collect here.') + '</div>') + '</div>' +
+    '</section>';
+  };
+
+  /* ---------- Weekly review ---------- */
+  function weekData(off) {
+    const days = weekDates().map((d) => addDays(d, off * 7));
+    const keys = days.map(keyOf);
+    const today = todayKey();
+    const info = streakInfo();
+    const counts = keys.map((k) => (k > today ? null : keptOf(peek(k)).filter(Boolean).length));
+    const sum = (f) => keys.reduce((a, k) => a + (peek(k)[f] || 0), 0);
+    const sleeps = keys.map((k) => peek(k).sleep).filter(Boolean);
+    const bodies = keys.map((k) => bodyOf(peek(k)));
+    const muscles = [...new Set(bodies.flatMap((x) => x.muscles))].filter((id) => GROUP[id]);
+    const entries = keys.flatMap((k) => (peek(k).journal || []).map((e) => ({ k, e })));
+    let quote = null;
+    for (let i = entries.length - 1; i >= 0 && !quote; i--) {
+      const e = entries[i].e;
+      const a = e.qa ? e.qa.find((x) => x.a) : (e.text ? { q: e.prompt, a: e.text } : null);
+      if (a) quote = { q: a.q, a: a.a, k: entries[i].k };
+    }
+    return {
+      days, keys, counts,
+      elapsed: keys.filter((k) => k <= today).length,
+      kept: counts.filter((c) => c === 4).length,
+      grace: keys.filter((k) => info.covered.has(k)),
+      mind: sum('mindMins'), work: sum('workMins'),
+      sleep: sleeps.length ? sleeps.reduce((a, x) => a + x.mins, 0) / sleeps.length : 0,
+      sessions: bodies.filter((x) => x.muscles.length || x.cardio).length,
+      cardio: bodies.reduce((a, x) => a + x.cardio, 0),
+      muscles, skipped: GROUPS.filter((gr) => !muscles.includes(gr.id)).map((gr) => gr.name),
+      prs: prsBetween(keys[0], keys[6]),
+      quote
+    };
+  }
+  const weekRange = (w) => w.days[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + w.days[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  screens.week = () => {
+    const off = Math.min(0, S.ui.weekOffset || 0);
+    const w = weekData(off);
+    const label = off === 0 ? 'This week' : off === -1 ? 'Last week' : 'Week of ' + w.days[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const cols = w.counts.map((c, i) =>
+      '<div class="wcol"><span class="wbar' + (w.grace.includes(w.keys[i]) ? ' grace' : '') + '"><i style="height:' + (c == null ? 0 : c / 4 * 100) + '%;--d:' + i + '"></i></span><em>' + 'MTWTFSS'[i] + '</em></div>').join('');
+    const row = (a, b2) => '<div class="wrow"><span>' + a + '</span><span>' + b2 + '</span></div>';
+    return '<section class="screen" data-step="' + off + '">' +
+      header(backTo('#/progress', 'Progress'), navPair('week-nav', 'Previous week', 'Next week', off >= 0)) +
+      '<div style="margin-top:24px">' +
+        '<div class="muted">' + label + ' · ' + weekRange(w) + '</div>' +
+        '<div style="display:flex;align-items:baseline;gap:10px;margin-top:6px">' +
+          '<div class="num" data-count="' + w.kept + '" style="font-size:72px;line-height:.9">' + w.kept + '</div>' +
+          '<div class="muted">of ' + (off === 0 ? w.elapsed : 7) + ' days kept' + (w.grace.length ? ' · ' + w.grace.length + ' grace' : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="wcols">' + cols + '</div>' +
+      '<div class="wrows">' +
+        row('Body', w.sessions + (w.sessions === 1 ? ' session' : ' sessions') + (w.cardio ? ' · ' + w.cardio + ' min cardio' : '')) +
+        row('Mind', fmtHM(w.mind) + ' read') +
+        row('Work', fmtHM(w.work) + ' deep work') +
+        row('Rest', w.sleep ? fmtHM(w.sleep) + ' average sleep' : 'No sleep logged') +
+      '</div>' +
+      '<div class="wmus">' +
+        '<div style="flex:1;min-width:0"><div class="muted">Muscles</div><div style="margin-top:6px;line-height:1.45">' +
+          (!w.muscles.length ? 'None logged this week.' : w.skipped.length ? 'Skipped ' + w.skipped.join(', ') + '.' : 'Every muscle trained.') +
+        '</div></div>' +
+        '<div style="flex-shrink:0">' + figureSvg(w.muscles, '#111111', 96) + '</div>' +
+      '</div>' +
+      (w.prs.length ? '<div class="wsec"><div class="muted">Personal bests</div>' +
+        w.prs.map((t) => row(esc(t.x.ex), fmtSet(t.x) + ' <span class="muted">from ' + fmtSet(t.prev) + '</span>')).join('') + '</div>' : '') +
+      (w.quote ? '<div class="wsec"><div class="muted">' + esc(w.quote.q || 'Journal') + '</div><blockquote class="wquote">“' + esc(w.quote.a) + '”</blockquote></div>' : '') +
+      '<div class="push" style="padding-top:28px"><button class="btn" data-act="share-week">' + I.share + 'Share this week</button></div>' +
+    '</section>';
+  };
+
+  /* ---------- Lifts sheet ---------- */
+  function liftListHtml(k) {
+    const sets = liftsOf(peek(k));
+    if (!sets.length) return '<div class="muted" style="padding:14px 0">No sets yet.</div>';
+    const groups = [];
+    sets.forEach((x) => {
+      let gr = groups.find((y) => sameEx(y.ex, x.ex));
+      if (!gr) groups.push(gr = { ex: x.ex, sets: [] });
+      gr.sets.push(x);
+    });
+    return groups.map((gr) => {
+      const prev = bestBefore(gr.ex, k);
+      const top = gr.sets.reduce((a, x) => (e1rm(x) > e1rm(a) ? x : a));
+      const pr = prev && e1rm(top) > e1rm(prev);
+      return '<div class="lift-group"><div class="row"><div>' + esc(gr.ex) + '</div>' +
+        (pr ? '<div class="pr">↑ New best</div>' : prev ? '<div class="small">Best ' + fmtSet(prev) + '</div>' : '') + '</div>' +
+        '<div class="lift-sets">' + gr.sets.map((x) => '<span class="lset">' + fmtSet(x) +
+          '<button data-act="lift-del" data-v="' + x.id + '" aria-label="Remove set">×</button></span>').join('') + '</div></div>';
+    }).join('');
+  }
+  function openLifts(k) {
+    S.ui.liftKey = k;
+    save();
+    const sugg = exerciseSuggestions(k);
+    const u = S.settings.unit || 'lb';
+    openSheet(
+      '<div class="row"><h3>Lifts</h3><div class="muted">' + (k === todayKey() ? 'Today' : fromKey(k).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</div></div>' +
+      '<div class="muted" style="margin-top:6px">Optional. Log the weight and Kept tracks your bests.</div>' +
+      (sugg.length ? '<div class="chips" style="margin-top:18px">' + sugg.slice(0, 8).map((x) => '<button class="chip" data-act="lift-pick" data-v="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>' : '') +
+      '<label class="field-label" for="lx" style="margin-top:20px">Exercise</label>' +
+      '<input id="lx" class="field sm" list="lx-list" autocomplete="off" autocapitalize="words" placeholder="Bench press">' +
+      '<datalist id="lx-list">' + sugg.map((x) => '<option value="' + esc(x) + '">').join('') + '</datalist>' +
+      '<div id="lx-hint" class="small" style="min-height:16px;margin-top:6px"></div>' +
+      '<div class="grid2" style="margin-top:8px">' +
+        '<div><label class="field-label" for="lw">Weight (' + u + ')</label><input id="lw" class="field sm" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></div>' +
+        '<div><label class="field-label" for="lr">Reps</label><input id="lr" class="field sm" type="number" inputmode="numeric" min="1" step="1" placeholder="8" enterkeyhint="done"></div>' +
+      '</div>' +
+      '<button class="btn" data-act="lift-add" style="margin-top:22px">Add set</button>' +
+      '<div id="lift-list" style="margin-top:18px">' + liftListHtml(k) + '</div>'
+    );
+  }
+  function liftHint() {
+    const lx = document.getElementById('lx'), h = document.getElementById('lx-hint');
+    if (!lx || !h) return;
+    const last = lx.value.trim() && lastSession(lx.value.trim(), S.ui.liftKey);
+    h.textContent = last ? 'Last time: ' + last.sets.map(fmtSet).join(', ') : '';
+    return last;
+  }
+  function refreshLifts() {
+    const list = document.getElementById('lift-list');
+    if (list) list.innerHTML = liftListHtml(S.ui.liftKey);
+    render();
+  }
 
   /* ---------- Onboarding ---------- */
   const OB_PLANS = [
@@ -1131,7 +1502,7 @@
         '<div class="j-prompt' + (has ? ' has' : '') + '" data-key="q' + step + '">' + qs[step] + '</div>' +
         body +
         (fresh && entries.length
-          ? '<div style="margin-top:auto;padding-top:40px"><div class="small" style="margin-bottom:6px">Earlier today</div>' +
+          ? '<div style="margin-top:auto;padding-top:40px"><div class="row" style="margin-bottom:6px"><div class="small">Earlier today</div><a class="small" href="#/entries" style="color:var(--muted)">All entries</a></div>' +
               entries.map((e) => '<div class="entry"><div class="small" style="margin-bottom:6px">' +
                 new Date(e.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + '</div>' +
                 (e.qa
@@ -1307,6 +1678,11 @@
         '<span class="seg-pill" style="--k:' + ['on', 'system', 'off'].indexOf(g.motion) + '"></span>' +
         [['on', 'On'], ['system', 'Match system'], ['off', 'Off']].map((o) => '<button data-act="motion" data-v="' + o[0] + '" aria-pressed="' + (g.motion === o[0]) + '">' + o[1] + '</button>').join('') +
       '</div>' +
+      '<div class="field-label" style="margin-top:20px">Weight unit</div>' +
+      '<div class="seg" role="group" aria-label="Weight unit" style="--n:2;margin-top:8px;height:40px">' +
+        '<span class="seg-pill" style="--k:' + (g.unit === 'kg' ? 1 : 0) + '"></span>' +
+        ['lb', 'kg'].map((un) => '<button data-act="unit" data-v="' + un + '" aria-pressed="' + ((g.unit || 'lb') === un) + '">' + un + '</button>').join('') +
+      '</div>' +
       '<button class="btn" data-act="settings-save" style="margin-top:28px">Save</button>' +
       '<div class="muted" style="margin-top:32px">Data stays in this browser.</div>' +
       '<div class="stack" style="gap:10px;margin-top:12px">' +
@@ -1320,15 +1696,36 @@
   }
 
   /* ---------- Share card ---------- */
-  function openShare() {
+  function weekCardHtml() {
+    const w = weekData(Math.min(0, S.ui.weekOffset || 0));
+    return '<div class="card" id="card">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+        '<div class="num" data-count="' + w.kept + '" style="font-size:120px;line-height:.85">' + w.kept + '</div>' +
+        '<div style="width:88px;margin-top:6px">' + figureSvg(w.muscles, '#F4F3F1', 88) + '</div>' +
+      '</div>' +
+      '<div style="margin-top:10px;font-size:13px;color:var(--night-muted)">of 7 days kept</div>' +
+      '<div class="push">' +
+        '<div style="height:1px;background:#F4F3F1"></div>' +
+        '<div class="card-week">' + w.counts.map((c, i) => '<span><i style="height:' + (c == null ? 0 : c / 4 * 100) + '%;--d:' + i + '"></i></span>').join('') + '</div>' +
+        '<div style="height:1px;background:#F4F3F1"></div>' +
+        '<div class="card-letters">' + 'MTWTFSS'.split('').map((l) => '<span>' + l + '</span>').join('') + '</div>' +
+        '<div class="card-stats">' +
+          '<div>' + fmtHM(w.mind) + '<em>read</em></div><div>' + fmtHM(w.work) + '<em>focus</em></div><div>' + (w.sleep ? fmtHM(w.sleep) : '—') + '<em>avg sleep</em></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="row" style="margin-top:32px"><div class="wordmark" style="font-size:12px">KEPT</div><div style="font-size:12px;color:var(--night-muted)">' + weekRange(w) + '</div></div>' +
+    '</div>';
+  }
+  function openShare(kind) {
     closeOverlay(true);
     const n = streak();
     const kept = keptOf(peek(todayKey()));
     const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     $overlay.innerHTML =
-      '<div class="share" role="dialog" aria-modal="true" aria-label="Share today">' +
+      '<div class="share" role="dialog" aria-modal="true" aria-label="' + (kind === 'week' ? 'Share this week' : 'Share today') + '">' +
         '<div class="wordmark share-mark" aria-hidden="true">KEPT</div>' +
         '<div id="card-box" style="display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-height:0;width:100%">' +
+          (kind === 'week' ? weekCardHtml() :
           '<div class="card" id="card">' +
             '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
               '<div class="num" data-count="' + n + '" style="font-size:120px;line-height:.85">' + n + '</div>' +
@@ -1341,11 +1738,11 @@
               '<div style="height:1px;background:#F4F3F1"></div>' +
             '</div>' +
             '<div class="row" style="margin-top:56px"><div class="wordmark" style="font-size:12px">KEPT</div><div style="font-size:12px;color:var(--night-muted)">' + dateStr + '</div></div>' +
-          '</div>' +
+          '</div>') +
         '</div>' +
         '<div style="display:flex;gap:10px;width:100%;max-width:360px">' +
           '<button class="btn" data-act="close" style="background:#2C2C2A;color:#F4F3F1;flex:1;height:48px">Close</button>' +
-          '<button class="btn" data-act="share-save" style="background:#F4F3F1;color:#0B0B0B;flex:2;height:48px">' + (navigator.share ? 'Share image' : 'Save image') + '</button>' +
+          '<button class="btn" data-act="share-save" data-v="' + (kind === 'week' ? 'week' : 'day') + '" style="background:#F4F3F1;color:#0B0B0B;flex:2;height:48px">' + (navigator.share ? 'Share image' : 'Save image') + '</button>' +
         '</div>' +
       '</div>';
     placeMark();
@@ -1409,10 +1806,56 @@
     return new Promise((res) => c.toBlob(res, 'image/png'));
   }
 
-  async function shareCard() {
-    const blob = await renderCardPng();
+  async function renderWeekPng() {
+    const w = weekData(Math.min(0, S.ui.weekOffset || 0));
+    try { await Promise.all([document.fonts.load('200 120px Geist'), document.fonts.load('300 13px Geist'), document.fonts.load('500 12px Geist')]); } catch (e) { /* fallback font */ }
+    const k = 3, c = document.createElement('canvas');
+    c.width = 360 * k; c.height = 640 * k;
+    const x = c.getContext('2d');
+    x.scale(k, k);
+    const fam = "'Geist', system-ui, sans-serif";
+    const LIGHT = '#F4F3F1', MUTED = '#9C9B97';
+    x.fillStyle = '#0B0B0B'; x.fillRect(0, 0, 360, 640);
+    x.fillStyle = LIGHT; x.textBaseline = 'alphabetic';
+    x.font = '200 120px ' + fam;
+    if ('letterSpacing' in x) x.letterSpacing = '-4.8px';
+    x.fillText(String(w.kept), 34, 64 + 88);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+    x.font = '300 13px ' + fam; x.fillStyle = MUTED;
+    x.fillText('of 7 days kept', 40, 64 + 102 + 10 + 12);
+    drawFigure(x, w.muscles, 320 - 88, 64 + 6, 0.8, LIGHT);
+    // seven day bars between two rules, letters beneath
+    const footY = 640 - 48, statsY = footY - 15 - 32, lettersY = statsY - 44, bottom = lettersY - 18, top = bottom - 168;
+    x.fillStyle = LIGHT;
+    x.fillRect(40, top, 280, 1); x.fillRect(40, bottom - 1, 280, 1);
+    x.strokeStyle = LIGHT; x.lineWidth = 1;
+    w.counts.forEach((cnt, i) => {
+      const cx = 40 + 20 + 40 * i, sx = cx - 7, sy = top + 1 + 8, h = 150;
+      x.strokeRect(sx + .5, sy + .5, 13, h - 1);
+      const fh = cnt == null ? 0 : Math.round(h * cnt / 4);
+      if (fh) x.fillRect(sx, sy + h - fh, 14, fh);
+    });
+    x.font = '300 11px ' + fam; x.fillStyle = MUTED; x.textAlign = 'center';
+    'MTWTFSS'.split('').forEach((l, i) => x.fillText(l, 40 + 20 + 40 * i, lettersY));
+    x.textAlign = 'left';
+    [[fmtHM(w.mind), 'read'], [fmtHM(w.work), 'focus'], [w.sleep ? fmtHM(w.sleep) : '—', 'avg sleep']].forEach((st, i) => {
+      const sx = 40 + i * 93.33;
+      x.font = '300 15px ' + fam; x.fillStyle = LIGHT; x.fillText(st[0], sx, statsY - 14);
+      x.font = '300 11px ' + fam; x.fillStyle = MUTED; x.fillText(st[1], sx, statsY + 2);
+    });
+    x.font = '500 12px ' + fam; x.fillStyle = LIGHT;
+    if ('letterSpacing' in x) x.letterSpacing = '3.84px';
+    x.fillText('KEPT', 40, footY - 2);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+    x.font = '300 12px ' + fam; x.fillStyle = MUTED; x.textAlign = 'right';
+    x.fillText(weekRange(w), 320, footY - 2);
+    return new Promise((res) => c.toBlob(res, 'image/png'));
+  }
+
+  async function shareCard(kind) {
+    const blob = await (kind === 'week' ? renderWeekPng() : renderCardPng());
     if (!blob) { toast('Could not create image'); return; }
-    const name = 'kept-' + todayKey() + '.png';
+    const name = 'kept-' + (kind === 'week' ? 'week-' : '') + todayKey() + '.png';
     const file = new File([blob], name, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ files: [file], title: 'Kept' }); return; } catch (e) { if (e.name === 'AbortError') return; }
@@ -1532,6 +1975,13 @@
   /* ---------- Data tools ---------- */
   const DEMO_UPPER = ['chest', 'back', 'shoulders', 'biceps', 'triceps'];
   const DEMO_LOWER = ['quads', 'hamstrings', 'glutes', 'calves', 'core'];
+  function demoLifts(i, upper) {
+    const step = Math.floor((40 - i) / 6) * 5;
+    const mk = (ex, w, r) => [0, 1, 2].map((n) => ({ id: 'd' + i + ex.length + n, ex, w, r: r - n }));
+    return upper
+      ? mk('Bench press', 135 + step, 8).concat(mk('Barbell row', 115 + step, 8))
+      : mk('Squat', 185 + step, 6).concat(mk('Romanian deadlift', 155 + step, 8));
+  }
   function loadDemo() {
     const now = new Date();
     const r = (a, b) => a + Math.random() * (b - a);
@@ -1552,6 +2002,8 @@
         sleep: { bed: hhmm(bedTot), wake: hhmm(wakeTot), mins: sleepM }
       };
       days[keyOf(dt)].blocks = full ? days[keyOf(dt)].workMins / 50 : (days[keyOf(dt)].workMins >= 50 ? 1 : 0);
+      const bd = days[keyOf(dt)].body;
+      if (bd && bd.muscles.length) days[keyOf(dt)].lifts = demoLifts(i, bd.muscles === DEMO_UPPER || bd.muscles.includes('chest'));
     }
     S.days = days;
     days[todayKey()] = {
@@ -1611,9 +2063,89 @@
         if (dr.step < 2) jGoTo(dr.step + 1); else jFinish();
         break;
       }
-      case 'share': openShare(); break;
-      case 'share-save': shareCard(); break;
+      case 'share': openShare('day'); break;
+      case 'share-save': shareCard(el.dataset.v); break;
       case 'cardio-open': openCardio(); break;
+      case 'open-day': S.ui.dayKey = el.dataset.v; save(); location.hash = '#/day'; break;
+      case 'day-nav': {
+        const next = keyOf(addDays(fromKey(dayKeyOpen()), +el.dataset.v));
+        if (next > todayKey()) break;
+        S.ui.dayKey = next; save(); render(); break;
+      }
+      case 'day-muscle': {
+        const d = day(dayKeyOpen());
+        const b = bodyOf(d);
+        const id = el.dataset.v;
+        const muscles = b.muscles.includes(id) ? b.muscles.filter((m) => m !== id) : b.muscles.concat(id);
+        d.body = muscles.length || b.cardio ? { muscles, cardio: b.cardio } : null;
+        save(); render(); break;
+      }
+      case 'day-num': {
+        const d = day(dayKeyOpen());
+        const v = +el.dataset.v;
+        const f = el.dataset.f;
+        if (f === 'cardio') {
+          const b = bodyOf(d);
+          const c = Math.max(0, Math.min(300, b.cardio + v));
+          d.body = b.muscles.length || c ? { muscles: b.muscles, cardio: c } : null;
+        } else if (f === 'mindMins') {
+          d.mindMins = Math.max(0, Math.min(600, (d.mindMins || 0) + v));
+        } else if (f === 'workMins') {
+          d.workMins = Math.max(0, Math.min(900, (d.workMins || 0) + v));
+          d.blocks = Math.floor(d.workMins / S.settings.focusMins);
+        }
+        save(); render(); break;
+      }
+      case 'day-sleep-clear': day(dayKeyOpen()).sleep = null; save(); render(); break;
+      case 'cal-nav': S.ui.calOffset = Math.min(0, (S.ui.calOffset || 0) + +el.dataset.v); save(); render(); break;
+      case 'open-week': S.ui.weekOffset = +el.dataset.v || 0; save(); location.hash = '#/week'; break;
+      case 'week-nav': S.ui.weekOffset = Math.min(0, (S.ui.weekOffset || 0) + +el.dataset.v); save(); render(); break;
+      case 'share-week': openShare('week'); break;
+      case 'lifts-open': openLifts(el.dataset.v || todayKey()); break;
+      case 'lift-pick': {
+        const lx = document.getElementById('lx');
+        lx.value = el.dataset.v;
+        const last = liftHint();
+        if (last) {
+          const top = last.sets.reduce((a, x) => (e1rm(x) > e1rm(a) ? x : a));
+          document.getElementById('lw').value = top.w || '';
+          document.getElementById('lr').value = top.r || '';
+        }
+        document.getElementById(last ? 'lr' : 'lw').focus({ preventScroll: true });
+        break;
+      }
+      case 'lift-add': {
+        const k = S.ui.liftKey || todayKey();
+        const ex = document.getElementById('lx').value.trim();
+        const w = Math.max(0, parseFloat(document.getElementById('lw').value) || 0);
+        const r = parseInt(document.getElementById('lr').value, 10);
+        if (!ex) { toast('Name the exercise'); return; }
+        if (!(r >= 1)) { toast('Add the reps'); return; }
+        const d = day(k);
+        const prev = bestBefore(ex, k);
+        const todayBest = liftsOf(d).filter((x) => sameEx(x.ex, ex)).reduce((a, x) => (!a || e1rm(x) > e1rm(a) ? x : a), null);
+        const set = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), ex, w, r };
+        d.lifts = liftsOf(d).concat(set);
+        save(); refreshLifts();
+        if (prev && e1rm(set) > e1rm(prev) && (!todayBest || e1rm(set) > e1rm(todayBest))) {
+          if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+          toast('New best. ' + ex + ' ' + fmtSet(set) + ', up from ' + fmtSet(prev));
+        }
+        break;
+      }
+      case 'lift-del': {
+        const d = day(S.ui.liftKey || todayKey());
+        d.lifts = liftsOf(d).filter((x) => x.id !== el.dataset.v);
+        if (!d.lifts.length) delete d.lifts;
+        save(); refreshLifts(); break;
+      }
+      case 'unit': {
+        S.settings.unit = el.dataset.v; save();
+        const seg = el.parentElement;
+        seg.querySelector('.seg-pill').style.setProperty('--k', el.dataset.v === 'kg' ? 1 : 0);
+        seg.querySelectorAll('button').forEach((bt) => bt.setAttribute('aria-pressed', String(bt === el)));
+        break;
+      }
       case 'muscle': {
         const d = day();
         const wasKept = bodyKept(d);
@@ -1746,6 +2278,8 @@
 
   document.addEventListener('input', (e) => {
     if (e.target.id === 'one-thing') { day().oneThing = e.target.value; save(); }
+    if (e.target.id === 'entry-q') { S.ui.q = e.target.value; save(); render(); }
+    if (e.target.id === 'lx') liftHint();
     if (e.target.id === 'ob-name') {
       S.profile.name = e.target.value.trim(); save();
       const cta = document.getElementById('ob-cta'); if (cta) cta.textContent = S.profile.name ? 'Continue' : 'Skip';
@@ -1760,10 +2294,19 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlayOpen()) closeOverlay();
     if (e.key === 'Enter' && e.target.id === 'one-thing') e.target.blur();
+    if (e.key === 'Enter' && e.target.id === 'lr') { e.preventDefault(); const b = document.querySelector('[data-act="lift-add"]'); if (b) b.click(); }
     if (e.key === 'Enter' && e.target.id === 'ob-name') { e.preventDefault(); const b = document.getElementById('ob-cta'); if (b) b.click(); }
     if (e.key === 'Enter' && e.target.id === 'rname') { const b = document.querySelector('[data-act="routine-save-confirm"]'); if (b) b.click(); }
   });
   window.addEventListener('resize', () => { placeMark(); fitCard(); });
+  // Past-day sleep times save as soon as both are set.
+  document.addEventListener('change', (e) => {
+    if (e.target.id !== 'day-bed' && e.target.id !== 'day-wake') return;
+    const bed = document.getElementById('day-bed').value, wake = document.getElementById('day-wake').value;
+    if (!bed || !wake) return;
+    day(dayKeyOpen()).sleep = { bed, wake, mins: sleepMins(bed, wake) };
+    save(); render();
+  });
 
   /* ---------- Router & loop ---------- */
   const route = () => {
@@ -1821,13 +2364,13 @@
     for (let i = tc.length; i < fc.length; i++) fc[i].remove();
   }
 
-  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1 };
+  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2 };
   function render(force) {
     const r = route();
     const tpl = document.createElement('template');
     tpl.innerHTML = screens[r]().trim();
     const next = tpl.content.firstElementChild;
-    next.dataset.route = r + (r === 'mind' && S.timers.mind ? ':session' : '') + (r === 'welcome' ? ':' + (S.profile.step || 0) : '');
+    next.dataset.route = r + (r === 'mind' && S.timers.mind ? ':session' : '') + (next.dataset.step != null ? ':' + next.dataset.step : '');
     const old = [...$screen.children].find((c) => !c.classList.contains('leave'));
 
     if (old && old.dataset.route === next.dataset.route && !force) {
@@ -1836,7 +2379,8 @@
       keep.forEach((c) => old.classList.add(c));
     } else {
       const from = old ? old.dataset.route.split(':')[0] : null;
-      const dir = from === 'welcome' && r === 'welcome' ? (+next.dataset.step > +old.dataset.step ? 'fwd' : 'back')
+      // Stepping through the same screen (intro steps, days, weeks) slides by direction.
+      const dir = old && from === r && old.dataset.step != null && next.dataset.step != null ? (+next.dataset.step > +old.dataset.step ? 'fwd' : 'back')
         : !old || r === 'journal' || from === 'journal' ? 'fade' : from === r ? 'fade' : DEPTH[r] > DEPTH[from] ? 'fwd' : DEPTH[r] < DEPTH[from] ? 'back' : 'fade';
       if (old) {
         old.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
