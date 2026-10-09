@@ -1,13 +1,13 @@
 // Kept service worker: lets the installed app open instantly and work offline.
 // Bump CACHE when shipping a change you want picked up on the next launch.
-const CACHE = 'kept-v9';
+const CACHE = 'kept-app-v10';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/maskable-512.png'
+  '../icons/icon-192.png',
+  '../icons/icon-512.png',
+  '../icons/maskable-512.png'
 ];
 
 self.addEventListener('install', (e) => {
