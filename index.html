@@ -1682,6 +1682,10 @@
     listenOrientation(true);
     if (S.timers.mind.state === 'arming') { S.timers.mind.state = 'down'; S.timers.mind.runFrom = Date.now(); save(); }
   }
+  // Installing, offline use and the mic all need https, so hop over from plain http (local dev excepted).
+  if (location.protocol === 'http:' && !/^(localhost|127\.0\.0\.1|\[::1\])$|^192\.168\.|^10\./.test(location.hostname)) {
+    location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+  }
   // Installable app: cache the app so it opens offline. Needs http(s), so skip when opened as a file.
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* offline support is optional */ }));
