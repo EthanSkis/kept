@@ -410,6 +410,16 @@
   .lquarter i { position: absolute; left: 0; top: -1px; height: 3px; background: var(--ink); transform-origin: left; }
   .enter .lquarter i { animation: grow-x 1100ms var(--ease) both; animation-delay: 300ms; }
 
+  /* Closed at night */
+  .screen.closed { justify-content: space-between; }
+  .night-pillars span { animation: none; }
+  .night-pillars span:not(:has(i)) { border-color: #3A3A38; }
+  .night-pillars i { animation-delay: calc(500ms + var(--d) * 220ms); }
+  .hold { position: relative; overflow: hidden; height: 44px; padding: 0 22px; border-radius: 22px; border: 1px solid #2E2E2C; background: none; color: #6E6E6B; font-size: 13px; font-weight: 300; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .hold-fill { position: absolute; inset: 0; background: #1E1E1D; transform: scaleX(0); transform-origin: left; transition: transform 250ms var(--ease); }
+  .hold.holding .hold-fill { transform: scaleX(1); transition: transform 1600ms linear; }
+  .hold.holding { color: #F4F3F1; border-color: #4A4A47; }
+  .hold-label { position: relative; }
   /* Membership */
   .mno { font-size: 96px; font-weight: 200; letter-spacing: -0.05em; line-height: .9; font-variant-numeric: tabular-nums; }
   .mno-in { font-size: 64px; animation: blur-in 1400ms var(--ease) both; animation-delay: 1500ms; }
@@ -488,7 +498,7 @@
   const NAMES = { body: 'Body', mind: 'Mind', work: 'Work', rest: 'Rest' };
 
   const defaults = () => ({
-    settings: { mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', motion: 'on', unit: 'lb', routines: [], book: { title: '', author: '' } },
+    settings: { mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', motion: 'on', unit: 'lb', nightClose: true, routines: [], book: { title: '', author: '' } },
     days: {},
     timers: { mind: null, work: null },
     ui: {},
@@ -774,7 +784,7 @@
       '</div>' +
       '<div class="push stack" style="gap:20px;padding-top:32px">' +
         (new Date().getDay() === 0 ? '<button class="link" data-act="open-week" data-v="0" style="align-self:center">Your week in review</button>' : '') +
-        '<div class="muted center">' + status + '</div>' +
+        '<div class="muted center">' + status + (function () { const m = closingSoon(); return m ? '<br><span class="small">Kept closes at ' + fmt12(S.settings.bedtime) + (m <= 15 ? ', in ' + m + ' min' : '') + '.</span>' : ''; })() + '</div>' +
         '<div style="display:flex;gap:10px">' +
           '<button class="btn" data-act="journal">' + I.mic + 'Journal</button>' +
           '<button class="icon-btn" data-act="share" aria-label="Share today">' + I.share + '</button>' +
@@ -1474,6 +1484,95 @@
     );
   }
 
+  /* ---------- Closed at night ----------
+     At lights out Kept turns into one dark screen and stays that way until the sleep goal
+     has passed. A running reading or focus session is allowed to finish first. Holding
+     "Open anyway" grants fifteen minutes, and the evening's record notes it. */
+  const NIGHT_PASS_MINS = 15;
+  const HOLD_MS = 1600;
+  const toMins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+  function nightWindow() {
+    const bed = toMins(S.settings.bedtime || '23:00');
+    const open = (bed + Math.round((S.settings.sleepGoal || 7) * 60)) % 1440;
+    return { bed, open };
+  }
+  function nightNow() {
+    const { bed, open } = nightWindow();
+    const now = new Date(), t = now.getHours() * 60 + now.getMinutes();
+    const closed = bed < open ? t >= bed && t < open : t >= bed || t < open;
+    // After midnight the night still belongs to the evening it started on. A lights out
+    // between midnight and 6 AM counts as that previous evening's.
+    const afterMidnight = bed > open ? t < open : bed < 360;
+    return { closed, key: keyOf(afterMidnight && closed ? addDays(now, -1) : now), open, bed };
+  }
+  const minsToHHMM = (m) => pad(Math.floor(m / 60) % 24) + ':' + pad(m % 60);
+  function isClosed() {
+    if (!S.profile.done || S.settings.nightClose === false) return false;
+    if (S.timers.mind || (S.timers.work && S.timers.work.endsAt)) return false;
+    if ((S.ui.nightPass || 0) > Date.now()) return false;
+    return nightNow().closed;
+  }
+  // Minutes until lights out, when it is within the hour; otherwise null.
+  function closingSoon() {
+    if (S.settings.nightClose === false) return null;
+    const { bed } = nightWindow();
+    const now = new Date(), t = now.getHours() * 60 + now.getMinutes();
+    const left = (bed - t + 1440) % 1440;
+    return left > 0 && left <= 60 ? left : null;
+  }
+
+  screens.closed = () => {
+    const nn = nightNow();
+    const kept = keptOf(peek(nn.key));
+    const n = kept.filter(Boolean).length;
+    const open = PILLARS.filter((k, i) => !kept[i]).map((k) => NAMES[k]);
+    const name = S.profile.name ? esc(S.profile.name) : '';
+    const line = n === 4
+      ? 'All four kept.<br>Goodnight' + (name ? ', ' + name : '') + '.'
+      : n + ' of 4 today.<br>Tomorrow is a clean page.';
+    const list = open.length > 1 ? open.slice(0, -1).join(', ') + ' and ' + open[open.length - 1] : open[0];
+    const sub = n === 4 ? 'Nothing left to do but sleep.' : list + (open.length === 1 ? ' waits' : ' wait') + ' for tomorrow. Sleep is how you get there.';
+    return '<section class="screen ob closed">' +
+      '<div class="ob-mark" style="align-self:center;animation:none">KEPT</div>' +
+      '<div class="ob-hero">' +
+        '<div class="ob-pillars night-pillars" aria-label="' + n + ' of 4 kept today">' + kept.map((k, i) => '<span style="--d:' + i + '">' + (k ? '<i></i>' : '') + '</span>').join('') + '</div>' +
+        '<h1 class="ob-title center">' + line + '</h1>' +
+        '<div class="ob-sub" style="margin:0 auto;text-align:center">' + sub + '</div>' +
+      '</div>' +
+      '<div class="stack" style="gap:18px;width:100%;align-items:center">' +
+        '<div class="ob-note" style="font-size:13px;color:var(--night-muted)">Kept opens at ' + fmt12(minsToHHMM(nn.open)) + '.</div>' +
+        '<button class="hold" data-hold="night-open" aria-label="Hold to open Kept anyway for ' + NIGHT_PASS_MINS + ' minutes"><span class="hold-fill"></span><span class="hold-label">Hold to open anyway</span></button>' +
+      '</div>' +
+    '</section>';
+  };
+
+  function nightOpen() {
+    const nn = nightNow();
+    const d = day(nn.key);
+    d.lateOpens = (d.lateOpens || 0) + 1;
+    S.ui.nightPass = Date.now() + NIGHT_PASS_MINS * 60000;
+    save(); render(true);
+    toast('Open for ' + NIGHT_PASS_MINS + ' minutes');
+  }
+
+  // Press and hold: pointer or keyboard, released early cancels.
+  let holdTimer = null;
+  function holdStart(el) {
+    if (holdTimer) return;
+    el.classList.add('holding');
+    holdTimer = setTimeout(() => { holdTimer = null; el.classList.remove('holding'); if (el.dataset.hold === 'night-open') nightOpen(); }, HOLD_MS);
+  }
+  function holdEnd() {
+    if (!holdTimer) return;
+    clearTimeout(holdTimer); holdTimer = null;
+    document.querySelectorAll('.holding').forEach((x) => x.classList.remove('holding'));
+  }
+  document.addEventListener('pointerdown', (e) => { const el = e.target.closest('[data-hold]'); if (el) { e.preventDefault(); holdStart(el); } });
+  ['pointerup', 'pointercancel'].forEach((ev) => document.addEventListener(ev, holdEnd, true));
+  document.addEventListener('pointerleave', (e) => { if (e.target.matches && e.target.matches('[data-hold]')) holdEnd(); }, true);
+  document.addEventListener('keydown', (e) => { const el = e.target.closest && e.target.closest('[data-hold]'); if (el && (e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); holdStart(el); } });
+  document.addEventListener('keyup', (e) => { if (e.key === 'Enter' || e.key === ' ') holdEnd(); });
+
   /* ---------- Membership ----------
      The tracker is free for good; membership adds Circle, Library and the annual volume.
      Preview: no payment is taken. In the native app the button hands off to the App Store
@@ -1486,10 +1585,10 @@
   const FOUNDER = 'Ethan';
   const isMember = () => !!S.member.no;
   const MEMBER_ROUTES = ['circle', 'library'];
-  const NIGHT_ROUTES = ['welcome', 'invite', 'member', 'joined'];
+  const NIGHT_ROUTES = ['welcome', 'invite', 'member', 'joined', 'closed'];
   // The invitation is earned: it appears once, the first time Today opens on a seven-day streak.
   function maybeInvite() {
-    if (!S.profile.done || isMember() || S.member.invited) return false;
+    if (!S.profile.done || isMember() || S.member.invited || isClosed()) return false;
     const r = location.hash.replace(/^#\/?/, '') || 'today';
     if (r !== 'today' || streak() < INVITE_AFTER) return false;
     S.member.invited = todayKey(); save();
@@ -1614,7 +1713,8 @@
     const n = kept.filter(Boolean).length;
     const grace = streakInfo().covered.has(k);
     const isToday = k === todayKey();
-    const status = n === 4 ? 'All four kept.' : grace ? n + ' of 4. Covered by a grace day.' : n + ' of 4 kept.';
+    const status = (n === 4 ? 'All four kept.' : grace ? n + ' of 4. Covered by a grace day.' : n + ' of 4 kept.') +
+      (d.lateOpens ? ' Opened after lights out' + (d.lateOpens > 1 ? ' ' + d.lateOpens + ' times' : '') + '.' : '');
     const sec = (i, name, inner) => '<div class="dsec"><div class="row"><div class="dlabel">' + name + '</div>' +
       '<div class="dstate' + (kept[i] ? ' on' : '') + '">' + (kept[i] ? 'Kept' : 'Open') + '</div></div>' + inner + '</div>';
     const stepper = (label, value, f, step) => '<div class="drow"><div>' + label + '</div><div class="dstep">' +
@@ -2195,6 +2295,12 @@
         '<div><label class="field-label" for="g-sleep">Sleep goal (h)</label><input id="g-sleep" class="field sm" type="number" min="1" max="12" step="0.5" value="' + g.sleepGoal + '"></div>' +
         '<div><label class="field-label" for="g-bed">Lights out</label><input id="g-bed" class="field sm" type="time" value="' + g.bedtime + '"></div>' +
       '</div>' +
+      '<div class="field-label" style="margin-top:24px">Close at lights out</div>' +
+      '<div class="seg" role="group" aria-label="Close at lights out" style="--n:2;margin-top:8px;height:40px">' +
+        '<span class="seg-pill" style="--k:' + (g.nightClose === false ? 1 : 0) + '"></span>' +
+        [[true, 'On'], [false, 'Off']].map((o) => '<button data-act="night-close" data-v="' + o[0] + '" aria-pressed="' + ((g.nightClose !== false) === o[0]) + '">' + o[1] + '</button>').join('') +
+      '</div>' +
+      '<div class="small" style="margin-top:8px">Kept goes dark at lights out and opens once your sleep goal has passed.</div>' +
       '<div class="field-label" style="margin-top:24px">Animations</div>' +
       '<div class="seg" role="group" aria-label="Animations" style="--n:3;margin-top:8px">' +
         '<span class="seg-pill" style="--k:' + ['on', 'system', 'off'].indexOf(g.motion) + '"></span>' +
@@ -2810,6 +2916,13 @@
         S.profile.name = document.getElementById('g-name').value.trim();
         save(); closeOverlay(); render(); toast('Saved'); break;
       }
+      case 'night-close': {
+        S.settings.nightClose = el.dataset.v === 'true'; save();
+        const seg = el.parentElement;
+        seg.querySelector('.seg-pill').style.setProperty('--k', S.settings.nightClose ? 0 : 1);
+        seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
+        break;
+      }
       case 'motion': {
         S.settings.motion = el.dataset.v; save(); applyMotion();
         const seg = el.parentElement;
@@ -2863,6 +2976,7 @@
   /* ---------- Router & loop ---------- */
   const route = () => {
     if (!S.profile.done) return 'welcome';
+    if (isClosed()) return 'closed';
     const r = location.hash.replace(/^#\/?/, '') || 'today';
     if (MEMBER_ROUTES.includes(r) && !isMember()) return 'member';
     return screens[r] ? r : 'today';
@@ -2917,7 +3031,7 @@
     for (let i = tc.length; i < fc.length; i++) fc[i].remove();
   }
 
-  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2, circle: 2, library: 2, invite: 1, member: 2, joined: 3 };
+  const DEPTH = { today: 0, body: 1, mind: 1, work: 1, rest: 1, progress: 1, journal: 1, day: 2, entries: 2, week: 2, circle: 2, library: 2, invite: 1, member: 2, joined: 3, closed: 0 };
   function render(force) {
     const r = route();
     const tpl = document.createElement('template');
@@ -2953,8 +3067,15 @@
   }
   window.addEventListener('hashchange', () => { if (maybeInvite()) return; if (route() !== 'journal') stopListening(); closeOverlay(); render(); });
 
+  let lastClosed = null, lastSoon = null;
   function tick() {
     if (todayKey() !== lastDay) { lastDay = todayKey(); render(); return; }
+    const c = isClosed();
+    if (lastClosed !== null && c !== lastClosed) { lastClosed = c; closeOverlay(true); render(); return; }
+    lastClosed = c;
+    // Keep the lights-out heads-up on Today current as the minutes count down.
+    const soon = closingSoon();
+    if (soon !== lastSoon) { lastSoon = soon; if (route() === 'today' && !overlayOpen()) render(); }
     const t = S.timers.work;
     if (t && t.endsAt && Date.now() >= t.endsAt) { workComplete(); return; }
     const r = route();
