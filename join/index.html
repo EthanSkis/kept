@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4F3F1">
+<title>Kept · Membership by application</title>
+<meta name="description" content="Body, Mind, Work, Rest. Keep all four, every day. A daily standard, and a small circle of people who notice if you slip.">
+<meta property="og:title" content="Kept">
+<meta property="og:description" content="Keep all four, every day. Membership by application.">
+<meta property="og:image" content="shot-today.webp">
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #F4F3F1;
+    --ink: #111111;
+    --paper: #FAFAF9;
+    --muted: #6E6E6B;
+    --line: #D6D5D1;
+    --faint: #E2E1DD;
+    --night: #0B0B0B;
+    --night-muted: #9C9B97;
+    --night-line: #262624;
+    --ease: cubic-bezier(.22,.8,.24,1);
+    --gutter: clamp(24px, 6vw, 72px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+  .wordmark { font-size: 13px; font-weight: 500; letter-spacing: .32em; text-decoration: none; }
+  .kicker { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--muted); }
+  .night .kicker { color: var(--night-muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 54px; padding: 0 30px; border-radius: 27px; border: none; background: var(--ink); color: var(--paper); font-size: 14px; font-weight: 400; letter-spacing: .02em; text-decoration: none; cursor: pointer; transition: transform 160ms var(--ease), opacity 160ms; }
+  .btn:active { transform: scale(.97); opacity: .85; }
+  .night .btn { background: var(--ground); color: var(--night); }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  /* Reveal on scroll */
+  /* Content is visible by default; it only waits to fade in once the script has run. */
+  .js .rise { opacity: 0; transform: translateY(18px); transition: opacity 900ms var(--ease), transform 900ms var(--ease); }
+  .js .rise.in { opacity: 1; transform: none; }
+
+  /* Top bar */
+  .top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--ground) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .top .wrap { height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .top a.apply { font-size: 13px; text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
+
+  /* Hero */
+  .hero { padding: clamp(48px, 9vw, 112px) 0 clamp(64px, 9vw, 120px); }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 64px; align-items: center; }
+  @media (min-width: 880px) { .hero .wrap { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); } }
+  h1 { margin: 18px 0 0; font-size: clamp(48px, 8.4vw, 96px); font-weight: 200; letter-spacing: -0.045em; line-height: .98; }
+  .lede { margin: 28px 0 0; max-width: 460px; font-size: 18px; line-height: 1.55; color: #3A3A38; }
+  .cta { margin-top: 40px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .note { font-size: 13px; color: var(--muted); }
+
+  /* Phone */
+  .phone { justify-self: center; width: min(320px, 78vw); aspect-ratio: 390 / 844; border-radius: 46px; padding: 10px; background: var(--ink); box-shadow: 0 2px 4px rgba(0,0,0,.12), 0 40px 80px rgba(0,0,0,.16); }
+  .phone img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 37px; }
+  .phone.light { background: #1C1C1B; }
+
+  /* Pillar mark */
+  .mark { display: flex; justify-content: space-between; width: 132px; padding: 8px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .mark span { position: relative; width: 12px; height: 72px; border: 1px solid var(--ink); overflow: hidden; }
+  .mark i { position: absolute; inset: 0; background: var(--ink); transform: scaleY(0); transform-origin: bottom; animation: fill 1100ms var(--ease) forwards; animation-delay: calc(400ms + var(--d) * 180ms); }
+  @keyframes fill { to { transform: scaleY(1); } }
+
+  /* Standard */
+  section { padding: clamp(72px, 10vw, 136px) 0; }
+  .rule { border-top: 1px solid var(--ink); }
+  h2 { margin: 16px 0 0; font-size: clamp(34px, 5vw, 56px); font-weight: 200; letter-spacing: -0.035em; line-height: 1.05; }
+  .pillars { margin-top: 56px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  @media (min-width: 880px) { .pillars { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .pillar { padding: 28px 24px 36px 0; border-bottom: 1px solid var(--faint); }
+  .pillar b { display: block; font-size: 22px; font-weight: 300; letter-spacing: -0.01em; }
+  .pillar p { margin: 10px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); max-width: 240px; }
+  .free { margin-top: 56px; display: flex; gap: 20px; align-items: baseline; flex-wrap: wrap; font-size: 18px; }
+  .free strong { font-weight: 400; }
+
+  /* Membership */
+  .night { background: var(--night); color: var(--ground); }
+  .mem { display: grid; grid-template-columns: minmax(0, 1fr); gap: 72px; align-items: center; }
+  @media (min-width: 880px) { .mem { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); } }
+  .night .lede { color: #C9C8C4; }
+  .perks { margin-top: 44px; border-top: 1px solid var(--night-line); }
+  .perk { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 20px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--night-line); }
+  .perk b { display: block; font-size: 18px; font-weight: 300; }
+  .perk em { display: block; margin-top: 4px; font-style: normal; font-size: 14px; line-height: 1.5; color: var(--night-muted); }
+  .vis { height: 70px; display: flex; align-items: center; justify-content: center; }
+  .vis-circle { display: flex; flex-direction: column; gap: 6px; }
+  .vis-circle span { display: flex; gap: 4px; }
+  .vis-circle i { width: 6px; height: 14px; border: 1px solid var(--ground); }
+  .vis-circle i.on { background: var(--ground); }
+  .vis-book { width: 44px; height: 66px; background: var(--ground); color: var(--night); padding: 6px 5px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 24px rgba(0,0,0,.5); }
+  .vis-book span, .vis-vol span { font-size: 4px; font-weight: 500; letter-spacing: .3em; }
+  .vis-book b { font-size: 6px; font-weight: 300; line-height: 1.2; }
+  .vis-vol { width: 50px; height: 64px; border: 1px solid var(--ground); border-left-width: 6px; border-radius: 1px 3px 3px 1px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; }
+  .vis-vol span { font-size: 5px; }
+  .vis-vol b { font-size: 11px; font-weight: 200; }
+  .price { margin-top: 44px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .price .num { font-size: clamp(56px, 7vw, 80px); font-weight: 200; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .price span { color: var(--night-muted); font-size: 15px; }
+
+  /* Steps */
+  .steps { margin-top: 56px; display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--ink); }
+  @media (min-width: 880px) { .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .step { padding: 28px 32px 36px 0; border-bottom: 1px solid var(--faint); }
+  .step .n { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .step b { display: block; margin-top: 14px; font-size: 22px; font-weight: 300; letter-spacing: -0.01em; }
+  .step p { margin: 10px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); max-width: 300px; }
+
+  /* Application */
+  .apply-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; }
+  @media (min-width: 880px) { .apply-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); } }
+  form { display: flex; flex-direction: column; gap: 30px; }
+  label { display: block; font-size: 13px; color: var(--muted); }
+  .field { display: block; width: 100%; margin-top: 6px; border: none; border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent; padding: 8px 0 12px; font-size: 22px; font-weight: 300; outline: none; }
+  textarea.field { min-height: 108px; resize: vertical; font-size: 18px; line-height: 1.5; }
+  .field::placeholder { color: #A9A8A4; }
+  .chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .chip span { display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 19px; border: 1px solid var(--line); font-size: 14px; color: var(--ink); transition: background 300ms, color 300ms, border-color 300ms; }
+  .chip input:checked + span { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chip input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .hp { position: absolute; left: -9999px; }
+  .form-foot { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .form-msg { font-size: 14px; color: var(--muted); }
+  .done { padding: 40px 0; }
+  .done h3 { margin: 0; font-size: 40px; font-weight: 200; letter-spacing: -0.03em; }
+  .done p { margin: 14px 0 0; font-size: 17px; line-height: 1.55; color: #3A3A38; max-width: 420px; }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--line); }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  footer a { text-decoration: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .rise { opacity: 1; transform: none; transition: none; }
+    .mark i { animation: none; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="wordmark" href="#" aria-label="Kept, home">KEPT</a>
+    <a class="apply" href="#apply">Apply</a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <div class="mark" aria-hidden="true"><span style="--d:0"><i></i></span><span style="--d:1"><i></i></span><span style="--d:2"><i></i></span><span style="--d:3"><i></i></span></div>
+        <div class="kicker" style="margin-top:40px">Membership by application</div>
+        <h1>Keep all four,<br>every day.</h1>
+        <p class="lede">Kept is a daily standard for body, mind, work and rest, and a small circle of people who notice if you slip.</p>
+        <div class="cta">
+          <a class="btn" href="#apply">Apply for a seat</a>
+          <span class="note">Coming to iPhone</span>
+        </div>
+      </div>
+      <div class="phone rise"><img src="shot-today.webp" width="390" height="844" alt="The Kept Today screen: 24 days kept, with Body, Mind, Work and Rest all filled."></div>
+    </div>
+  </div>
+
+  <section class="rule">
+    <div class="wrap">
+      <div class="rise">
+        <div class="kicker">The standard</div>
+        <h2>Four things.<br>Every day. No exceptions.</h2>
+      </div>
+      <div class="pillars rise">
+        <div class="pillar"><b>Body</b><p>Log what you trained. Kept tracks every muscle and tells you what has rested longest.</p></div>
+        <div class="pillar"><b>Mind</b><p>Read a real book. The timer only runs while your phone is face down.</p></div>
+        <div class="pillar"><b>Work</b><p>One 50-minute block of deep focus. No notifications. That is the bar.</p></div>
+        <div class="pillar"><b>Rest</b><p>Lights out on time, and enough hours to come back tomorrow and do it again.</p></div>
+      </div>
+      <div class="free rise"><strong>The tracker is free, for good.</strong><span class="note" style="font-size:16px">Your streak is yours. It is never held behind a paywall.</span></div>
+    </div>
+  </section>
+
+  <section class="night">
+    <div class="wrap mem">
+      <div>
+        <div class="rise">
+          <div class="kicker">Membership</div>
+          <h2>For people<br>who keep it.</h2>
+          <p class="lede">Everything around the tracker. Small on purpose, so it stays good.</p>
+        </div>
+        <div class="perks rise">
+          <div class="perk"><div class="vis"><div class="vis-circle" aria-hidden="true"><span><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span><i class="on"></i><i class="on"></i><i></i><i class="on"></i></span><span><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div></div><div><b>A seat at a table of seven.</b><em>Six people who see whether you kept it. One note a week. No feed, no likes.</em></div></div>
+          <div class="perk"><div class="vis"><div class="vis-book" aria-hidden="true"><span>KEPT</span><b>Letters from a Stoic</b></div></div><div><b>Four hardcovers a year.</b><em>Chosen for you, one a season, each with a handwritten card.</em></div></div>
+          <div class="perk"><div class="vis"><div class="vis-vol" aria-hidden="true"><span>KEPT</span><b id="year">2026</b></div></div><div><b>Your year, bound.</b><em>Every kept day and every answer, printed and sent each December.</em></div></div>
+        </div>
+        <div class="price rise"><div class="num">$450</div><span>a year, or $45 a month. Cancel anytime.</span></div>
+      </div>
+      <div class="phone light rise"><img src="shot-circle.webp" width="390" height="844" loading="lazy" alt="A Kept circle: seven members, each with today's four pillars and their streak."></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="rise">
+        <div class="kicker">How it works</div>
+        <h2>Seats are filled<br>by hand.</h2>
+      </div>
+      <div class="steps rise">
+        <div class="step"><div class="n">01</div><b>Apply</b><p>Tell us what a kept day looks like for you right now. Honest beats impressive.</p></div>
+        <div class="step"><div class="n">02</div><b>We read every one</b><p>Founding members are invited in small groups, so every circle starts strong.</p></div>
+        <div class="step"><div class="n">03</div><b>Take your seat</b><p>You get the app, your circle, and your first book in the mail.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="apply">
+    <div class="wrap apply-grid">
+      <div class="rise">
+        <div class="kicker">Application</div>
+        <h2>Apply for<br>a seat.</h2>
+        <p class="lede" style="font-size:16px">Two minutes. We reply to everyone, usually within two weeks. Your email is only used to answer you.</p>
+      </div>
+      <div class="rise" id="form-box">
+        <form id="apply-form" novalidate>
+          <div><label for="f-name">First name</label><input class="field" id="f-name" name="name" autocomplete="given-name" maxlength="40" required></div>
+          <div><label for="f-email">Email</label><input class="field" id="f-email" name="email" type="email" autocomplete="email" maxlength="120" required></div>
+          <div><label for="f-day">What does a kept day look like for you right now?</label><textarea class="field" id="f-day" name="today" maxlength="1200" required placeholder="Up at six, lifting three days a week, reading most nights. Sleep is the weak spot."></textarea></div>
+          <div>
+            <label id="l-want">What draws you to Kept? <span style="color:#A9A8A4">Pick any</span></label>
+            <div class="chips" role="group" aria-labelledby="l-want">
+              <label class="chip"><input type="checkbox" name="want" value="circle"><span>The circle</span></label>
+              <label class="chip"><input type="checkbox" name="want" value="books"><span>The books</span></label>
+              <label class="chip"><input type="checkbox" name="want" value="tracker"><span>The tracker</span></label>
+              <label class="chip"><input type="checkbox" name="want" value="volume"><span>The bound year</span></label>
+            </div>
+          </div>
+          <div>
+            <label id="l-phone">Do you use an iPhone?</label>
+            <div class="chips" role="radiogroup" aria-labelledby="l-phone">
+              <label class="chip"><input type="radio" name="iphone" value="yes" checked><span>Yes</span></label>
+              <label class="chip"><input type="radio" name="iphone" value="no"><span>No</span></label>
+            </div>
+          </div>
+          <div><label for="f-src">How did you hear about Kept? <span style="color:#A9A8A4">Optional</span></label><input class="field" id="f-src" name="source" maxlength="200" style="font-size:18px"></div>
+          <input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="form-foot">
+            <button class="btn" type="submit" id="f-submit">Send application</button>
+            <span class="form-msg" id="f-msg" role="status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="wordmark" style="font-size:11px">KEPT</span>
+    <span>Body. Mind. Work. Rest. · © <span id="yr">2026</span></span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+  // Applications go to a Supabase table (see supabase/applications.sql).
+  // Fill these in once the project exists; until then the form says it is not connected.
+  const SUPABASE_URL = '';
+  const SUPABASE_ANON_KEY = '';
+
+  document.documentElement.classList.add('js');
+  const y = new Date().getFullYear();
+  document.getElementById('yr').textContent = y;
+  document.getElementById('year').textContent = y;
+
+  // Reveal sections as they scroll in.
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -8% 0px' }) : null;
+  document.querySelectorAll('.rise').forEach((el) => (io ? io.observe(el) : el.classList.add('in')));
+
+  const form = document.getElementById('apply-form');
+  const msg = document.getElementById('f-msg');
+  const btn = document.getElementById('f-submit');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    if (fd.get('company')) return; // bots fill the hidden field
+    const name = String(fd.get('name') || '').trim();
+    const email = String(fd.get('email') || '').trim();
+    const today = String(fd.get('today') || '').trim();
+    if (!name) { msg.textContent = 'Add your first name.'; document.getElementById('f-name').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.textContent = 'That email doesn’t look right.'; document.getElementById('f-email').focus(); return; }
+    if (today.length < 10) { msg.textContent = 'Tell us a little about your days.'; document.getElementById('f-day').focus(); return; }
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      msg.textContent = 'Applications aren’t connected yet. Nothing was sent.';
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Sending…'; msg.textContent = '';
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/applications', {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ name, email, today, wants: fd.getAll('want'), iphone: fd.get('iphone') === 'yes', source: String(fd.get('source') || '').trim() || null })
+      });
+      if (!res.ok) throw new Error(res.status);
+      document.getElementById('form-box').innerHTML = '<div class="done" role="status"><h3>Thank you, ' + name.replace(/[&<>"']/g, '') + '.</h3>' +
+        '<p>We read every application and reply to everyone, usually within two weeks. Until then, keep all four.</p></div>';
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Send application';
+      msg.textContent = 'Something went wrong. Try again in a minute.';
+    }
+  });
+})();
+</script>
+</body>
+</html>
