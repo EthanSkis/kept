@@ -406,6 +406,9 @@
   .levent { padding: 10px 0 10px 16px; border-left: 1px solid var(--faint); font-size: 14px; color: var(--muted); }
   .levent.cur { border-left-color: var(--ink); color: var(--ink); }
   .levent .small { margin-top: 2px; }
+  .lquarter { position: relative; flex-shrink: 0; margin-top: 10px; height: 1px; background: var(--line); }
+  .lquarter i { position: absolute; left: 0; top: -1px; height: 3px; background: var(--ink); transform-origin: left; }
+  .enter .lquarter i { animation: grow-x 1100ms var(--ease) both; animation-delay: 300ms; }
 
   html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
 </style>
@@ -928,7 +931,7 @@
             if (!S.library.joined) return '';
             const L = libraryState();
             if (L.book.t === book.title) return '';
-            return '<a class="small" href="#/library" style="margin-top:4px;color:var(--muted);text-decoration:none">' + (L.stage === LIB_STAGES.length - 1 ? 'Your library pick arrived ›' : 'Library · ' + libraryHeadline(L).toLowerCase() + ' ›') + '</a>';
+            return '<a class="small" href="#/library" style="margin-top:4px;color:var(--muted);text-decoration:none">' + (L.stage === LIB_STAGES.length - 1 ? 'Your ' + season(new Date(L.shipped)) + ' pick is here ›' : 'Library · ' + libraryHeadline(L).toLowerCase() + ' ›') + '</a>';
           })() +
         '</div>' +
       '</div>' +
@@ -1279,9 +1282,17 @@
   }
 
   /* ---------- Library ----------
-     Preview: one hardcover a month. Shipping events are simulated on a fixed schedule
-     from the shipment date until fulfillment and a carrier integration exist. */
-  const LIB_CYCLE = 30 * 86400000;
+     Preview: four hardcovers a year, one a season. Shipping events are simulated on a fixed
+     schedule from the shipment date until fulfillment and a carrier integration exist. */
+  const LIB_CYCLE = 91 * 86400000;
+  // Tracking stays up for a few days after delivery, then the page turns to reading.
+  const LIB_SETTLE_DAYS = 3;
+  // Meteorological seasons, so a pick 91 days later always lands in the next one.
+  const season = (dt) => {
+    const m = dt.getMonth();
+    const name = m === 11 || m < 2 ? 'Winter' : m < 5 ? 'Spring' : m < 8 ? 'Summer' : 'Fall';
+    return name + ' ' + (dt.getFullYear() + (m === 11 ? 1 : 0));
+  };
   const LIBRARY = [
     { t: 'Letters from a Stoic', a: 'Seneca', why: 'You keep writing about time. Seneca spent a whole letter on it. Start with the first one and read one a night.' },
     { t: 'The Old Man and the Sea', a: 'Ernest Hemingway', why: 'Short and hard, about keeping at it when nobody is watching. Two sittings, maybe three.' },
@@ -1322,10 +1333,12 @@
     let stage = 0;
     LIB_STAGES.forEach((s, i) => { if (hrs >= s.h) stage = i; });
     const digits = ('9400' + String(Math.floor(H01('kept' + S.library.joined + n) * 1e9)).padStart(9, '0') + String(Math.floor(H01('ship' + n + S.library.joined) * 1e9)).padStart(9, '0'));
+    const deliveredAt = new Date(shipped + LIB_STAGES[LIB_STAGES.length - 1].h * 3600000);
     return {
-      n, shipped, stage, book: pick(n),
+      n, shipped, stage, book: pick(n), deliveredAt,
+      settled: stage === LIB_STAGES.length - 1 && daysBetween(deliveredAt, new Date()) >= LIB_SETTLE_DAYS,
       at: (i) => new Date(shipped + LIB_STAGES[i].h * 3600000),
-      eta: new Date(shipped + LIB_STAGES[LIB_STAGES.length - 1].h * 3600000),
+      eta: deliveredAt,
       next: new Date(shipped + LIB_CYCLE),
       shelf: [...Array(n)].map((_, i) => ({ ...pick(i), when: new Date(S.library.joined + i * LIB_CYCLE) })).reverse(),
       tracking: digits.match(/.{1,4}/g).join(' ')
@@ -1338,6 +1351,7 @@
   const fmtWhen = (dt) => dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + fmt12(pad(dt.getHours()) + ':' + pad(dt.getMinutes()));
   function libraryHeadline(L) {
     const last = LIB_STAGES.length - 1;
+    if (L.settled) return S.settings.book.title === L.book.t ? 'Now reading' : 'On your nightstand';
     if (L.stage === last) return 'Delivered ' + dayName(L.at(last));
     if (L.stage === last - 1) return 'Out for delivery';
     const d = dayName(L.eta);
@@ -1351,7 +1365,6 @@
     const L = libraryState();
     const last = LIB_STAGES.length - 1;
     const delivered = L.stage === last;
-    const reading = S.settings.book.title === L.book.t;
     // Five evenly spaced stops; "In transit" has no stop of its own and fills halfway to "Out".
     const POS = [0, 25, 50, 62.5, 75, 100];
     const fill = POS[L.stage];
@@ -1359,10 +1372,30 @@
       '<div class="lstop' + (i <= L.stage ? ' on' : '') + (i === 0 ? ' first' : i === last ? ' last' : '') + '" style="left:' + POS[i] + '%"><i></i><span>' + s.label + '</span></div>')).join('');
     const events = LIB_STAGES.slice(0, L.stage + 1).map((s, i) => ({ s, dt: L.at(i) })).reverse().map((e, i) =>
       '<div class="levent' + (i === 0 ? ' cur' : '') + '"><div>' + e.s.ev + '</div><div class="small">' + fmtWhen(e.dt) + (e.s.where ? ' · ' + e.s.where : '') + '</div></div>').join('');
+    const reading = S.settings.book.title === L.book.t;
+    const sinceKey = keyOf(L.deliveredAt);
+    const readMins = Object.keys(S.days).filter((k) => k >= sinceKey && k <= todayKey()).reduce((a, k) => a + (S.days[k].mindMins || 0), 0);
+    const daysLeft = Math.max(0, daysBetween(new Date(), L.next));
+    const weeksLeft = Math.ceil(daysLeft / 7);
+    const quarterPct = Math.min(100, Math.max(0, (Date.now() - L.shipped) / LIB_CYCLE * 100));
+    const shipping = L.settled
+      ? '<div class="wsec" style="margin-top:32px;border-top-color:var(--ink)">' +
+          '<div class="row"><div class="dlabel">Reading</div><div class="small">Arrived ' + L.deliveredAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</div></div>' +
+          '<div style="margin-top:10px;display:flex;align-items:baseline;gap:10px">' +
+            '<div class="num" style="font-size:48px;line-height:1">' + (reading ? hm(readMins) : '—') + '</div>' +
+            '<div class="muted">' + (reading ? 'read since it arrived' : 'not started') + '</div>' +
+          '</div>' +
+          '<div class="row muted" style="margin-top:24px"><div>Next pick</div><div style="color:var(--ink)">' + (weeksLeft <= 1 ? (daysLeft === 1 ? '1 day' : daysLeft + ' days') : weeksLeft + ' weeks') + '</div></div>' +
+          '<div class="lquarter"><i style="width:' + quarterPct.toFixed(1) + '%"></i></div>' +
+          '<div class="small" style="margin-top:8px">No rush. Twelve weeks is plenty for one good book.</div>' +
+        '</div>'
+      : '<div class="ltrack" style="--fill:' + fill + '%"><div class="lline"><i></i></div>' + stops + '</div>' +
+        '<div class="levents">' + events + '</div>' +
+        '<div class="small" style="margin-top:10px">USPS Priority Mail · ' + L.tracking + '</div>';
     return '<section class="screen">' +
       header(backTo('#/progress', 'Progress'), '<div class="wordmark">KEPT</div>') +
       '<div style="margin-top:28px">' +
-        '<div class="muted">Library · No. ' + (L.n + 1) + '</div>' +
+        '<div class="muted">Library · ' + season(new Date(L.shipped)) + '</div>' +
         '<div class="ltitle">' + libraryHeadline(L) + '</div>' +
       '</div>' +
       '<div style="margin-top:28px;display:flex;gap:20px;align-items:flex-end">' +
@@ -1370,12 +1403,10 @@
         '<div class="stack" style="gap:4px;min-width:0">' +
           '<div style="font-size:20px;letter-spacing:-.01em;line-height:1.2">' + esc(L.book.t) + '</div>' +
           '<div class="muted">' + esc(L.book.a) + '</div>' +
-          '<div class="small" style="margin-top:6px">Hardcover · ' + new Date(L.shipped).toLocaleDateString('en-US', { month: 'long' }) + ' pick</div>' +
+          '<div class="small" style="margin-top:6px">Hardcover · pick ' + (L.n % 4 + 1) + ' of 4 this year</div>' +
         '</div>' +
       '</div>' +
-      '<div class="ltrack" style="--fill:' + fill + '%"><div class="lline"><i></i></div>' + stops + '</div>' +
-      '<div class="levents">' + events + '</div>' +
-      '<div class="small" style="margin-top:10px">USPS Priority Mail · ' + L.tracking + '</div>' +
+      shipping +
       '<div class="wsec" style="margin-top:28px;border-top-color:var(--ink)">' +
         '<div class="dlabel">Why this one</div>' +
         '<p class="wquote">' + esc(L.book.why) + '</p>' +
@@ -1383,21 +1414,22 @@
       '</div>' +
       (L.shelf.length
         ? '<div class="wsec"><div class="dlabel">Your shelf</div>' + L.shelf.map((b) =>
-            '<div class="wrow"><span>' + esc(b.t) + '<span class="small" style="display:block;margin-top:2px">' + esc(b.a) + '</span></span><span class="muted">' + b.when.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) + '</span></div>').join('') + '</div>'
+            '<div class="wrow"><span>' + esc(b.t) + '<span class="small" style="display:block;margin-top:2px">' + esc(b.a) + '</span></span><span class="muted">' + season(b.when) + '</span></div>').join('') + '</div>'
         : '') +
       '<div class="push stack" style="gap:12px;padding-top:32px">' +
         (delivered
           ? (reading ? '<div class="muted center">Now reading. Mind counts every minute.</div>' : '<button class="btn" data-act="library-read">Start reading</button>')
           : '') +
-        '<button class="btn ghost" data-act="library-steer">' + (S.library.steer ? 'Edit your steer for next month' : 'Steer next month’s pick') + '</button>' +
-        '<div class="small center">Next pick ships ' + L.next.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · Preview, shipping is simulated</div>' +
+        '<button class="btn ghost" data-act="library-steer">' + (S.library.steer ? 'Edit your steer for ' + season(L.next) : 'Steer the ' + season(L.next) + ' pick') + '</button>' +
+        '<div class="small center">Four hardcovers a year · next ships ' + L.next.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</div>' +
+        '<div class="small center">Preview · shipping is simulated</div>' +
       '</div>' +
     '</section>';
   };
 
   function openSteer() {
     openSheet(
-      '<h3>Steer the next pick</h3>' +
+      '<h3>Steer the ' + season(libraryState().next) + ' pick</h3>' +
       '<div class="muted" style="margin-top:6px">A mood, a subject, something you want more or less of. A person reads this.</div>' +
       '<textarea id="lsteer" maxlength="400" placeholder="Something shorter. Fiction. About work." style="margin-top:20px">' + esc(S.library.steer || '') + '</textarea>' +
       '<button class="btn" data-act="library-steer-save" style="margin-top:16px">Save</button>'
@@ -2337,7 +2369,7 @@
     S.settings = { ...S.settings, routines: [{ id: 'upper', name: 'Upper', muscles: DEMO_UPPER.slice() }, { id: 'lower', name: 'Lower', muscles: DEMO_LOWER.slice() }], mindGoal: 20, focusMins: 50, sleepGoal: 7, bedtime: '23:00', book: { title: 'Meditations', author: 'Marcus Aurelius' } };
     S.timers = { mind: null, work: null };
     S.circle = { since: keyOf(addDays(now, -12)), notes: {} };
-    // Third shipment, mailed two mornings ago, so the sample shows a package in transit.
+    // Third seasonal shipment, mailed two mornings ago, so the sample shows a package in transit.
     const shipped = new Date(now); shipped.setHours(8, 0, 0, 0);
     S.library = { joined: shipped.getTime() - 2 * 86400000 - 2 * LIB_CYCLE, picks: [], steer: '' };
     save();
