@@ -156,9 +156,10 @@
     100% { stroke-dashoffset: -1.04; }
   }
   .fig rect { transition: fill 450ms var(--ease); }
-  .mlist { position: relative; margin-top: 28px; border-top: 1px solid var(--ink); }
+  /* Rows are absolutely positioned, so the list must keep its full height: never let the flex column squeeze it. */
+  .mlist { position: relative; flex-shrink: 0; box-sizing: content-box; margin-top: 28px; border-top: 1px solid var(--ink); }
   .mrow { position: absolute; left: 0; top: 0; width: 100%; height: 36px; padding: 0; border: none; border-bottom: 1px solid var(--faint); background: none; display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 15px; font-weight: 300; color: var(--ink); transition: transform 650ms var(--ease), color 400ms; }
-  .mrow.static { position: relative; margin-top: 20px; border-top: 1px solid var(--faint); }
+  .mrow.static { position: relative; flex-shrink: 0; margin-top: 20px; border-top: 1px solid var(--faint); }
   .mrow .mdays { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; transition: color 400ms; }
   .mrow.due { font-weight: 400; }
   .mrow.due .mdays { color: var(--ink); }
