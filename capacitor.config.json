@@ -1,0 +1,15 @@
+{
+  "appId": "com.keptsociety.app",
+  "appName": "Kept",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#F4F3F1"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "initialViewportFitValueHint": "cover",
+      "style": "LIGHT"
+    }
+  }
+}
